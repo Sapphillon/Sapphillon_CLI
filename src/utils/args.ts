@@ -6,6 +6,15 @@ export interface ParsedArgs {
   [key: string]: unknown;
 }
 
+/**
+ * Mapping of short flags to long flags
+ */
+const FLAG_ALIASES: { [key: string]: string } = {
+  h: "help",
+  v: "version",
+  n: "name",
+};
+
 export function parseArgs(args: string[]): ParsedArgs {
   const result: ParsedArgs = { _: [] };
 
@@ -29,13 +38,7 @@ export function parseArgs(args: string[]): ParsedArgs {
       const nextArg = args[i + 1];
 
       // Map short flags to long flags
-      const mapping: { [key: string]: string } = {
-        h: "help",
-        v: "version",
-        n: "name",
-      };
-
-      const longKey = mapping[key] || key;
+      const longKey = FLAG_ALIASES[key] || key;
 
       if (longKey === "help" || longKey === "version") {
         result[longKey] = true;
