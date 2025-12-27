@@ -1,0 +1,23 @@
+{
+  "name": "Sapphillon CLI Development",
+  "image": "denoland/deno:latest",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "denoland.vscode-deno"
+      ],
+      "settings": {
+        "deno.enable": true,
+        "deno.lint": true,
+        "deno.unstable": false,
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "denoland.vscode-deno",
+        "[typescript]": {
+          "editor.defaultFormatter": "denoland.vscode-deno"
+        }
+      }
+    }
+  },
+  "postCreateCommand": "deno --version && make help",
+  "remoteUser": "deno"
+}
