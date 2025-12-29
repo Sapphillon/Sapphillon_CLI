@@ -18,6 +18,8 @@ A modern command-line tool built with Deno and TypeScript.
 
 ### Installation
 
+#### Install from Source
+
 ```bash
 # Clone the repository
 git clone https://github.com/Sapphillon/Sapphillon_CLI.git
@@ -25,6 +27,25 @@ cd Sapphillon_CLI
 
 # Install Deno (if not already installed)
 make install
+```
+
+#### Install via Deno
+
+You can install this CLI globally using Deno's install command:
+
+```bash
+# Install from the repository
+deno install --allow-read --allow-write --allow-net -n sapphillon https://raw.githubusercontent.com/Sapphillon/Sapphillon_CLI/main/main.ts
+
+# Or if you've cloned the repository locally
+deno install --allow-read --allow-write --allow-net -n sapphillon main.ts
+```
+
+After installation, you can run the CLI from anywhere:
+
+```bash
+sapphillon --help
+sapphillon greet --name Alice
 ```
 
 ### Usage

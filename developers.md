@@ -1,25 +1,25 @@
 # Sapphillon CLI - Developer Guide
 
-このドキュメントでは、Sapphillon CLIの開発方法について説明します。
+This document explains how to develop the Sapphillon CLI.
 
-## 前提条件
+## Prerequisites
 
-- [Deno](https://deno.land/) v1.x以上
-- Make (オプション、推奨)
+- [Deno](https://deno.land/) v1.x or higher
+- Make (optional, recommended)
 - Git
 
-## セットアップ
+## Setup
 
-### 1. リポジトリのクローン
+### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/Sapphillon/Sapphillon_CLI.git
 cd Sapphillon_CLI
 ```
 
-### 2. Denoのインストール
+### 2. Install Deno
 
-Denoがインストールされていない場合は、以下のコマンドでインストールできます：
+If Deno is not already installed, you can install it with the following commands:
 
 ```bash
 # macOS/Linux
@@ -28,101 +28,101 @@ curl -fsSL https://deno.land/install.sh | sh
 # Windows (PowerShell)
 irm https://deno.land/install.ps1 | iex
 
-# または、Makefileを使用
+# Or use the Makefile
 make install
 ```
 
-### 3. Dev Container を使用する（オプション）
+### 3. Using Dev Container (Optional)
 
-VS CodeとDocker環境がある場合、Dev Containerを使用して開発環境を簡単にセットアップできます：
+If you have VS Code and Docker environment, you can easily set up the development environment using Dev Container:
 
-1. VS Codeで「Dev Containers」拡張機能をインストール
-2. リポジトリを開く
-3. コマンドパレット (Ctrl+Shift+P / Cmd+Shift+P) から「Dev Containers: Reopen in Container」を選択
+1. Install the "Dev Containers" extension in VS Code
+2. Open the repository
+3. Select "Dev Containers: Reopen in Container" from the Command Palette (Ctrl+Shift+P / Cmd+Shift+P)
 
-Dev Containerには以下が含まれます：
-- Deno最新版
-- VS Code Deno拡張機能
-- 自動的な設定
+Dev Container includes:
+- Latest version of Deno
+- VS Code Deno extension
+- Automatic configuration
 
-## 開発ワークフロー
+## Development Workflow
 
-### Make コマンド
+### Make Commands
 
-プロジェクトには、よく使用するコマンドをまとめたMakefileが含まれています：
+The project includes a Makefile with commonly used commands:
 
 ```bash
-# 利用可能なコマンドを表示
+# Show available commands
 make help
 
-# CLIを実行
+# Run the CLI
 make run
 
-# 開発モード（ファイル変更を監視して自動再起動）
+# Development mode (watch for file changes and auto-restart)
 make dev
 
-# テストを実行
+# Run tests
 make test
 
-# コードフォーマット
+# Format code
 make fmt
 
-# コードフォーマットのチェック（変更なし）
+# Check code formatting (no changes)
 make fmt-check
 
-# Linterを実行
+# Run linter
 make lint
 
-# 一時ファイルをクリーンアップ
+# Clean temporary files
 make clean
 ```
 
-### Deno タスク
+### Deno Tasks
 
-`deno.json`に定義されているタスクを直接実行することもできます：
+You can also run tasks defined in `deno.json` directly:
 
 ```bash
-# CLIを実行
+# Run the CLI
 deno task start
 
-# 開発モード
+# Development mode
 deno task dev
 
-# テストを実行
+# Run tests
 deno task test
 
-# コードフォーマット
+# Format code
 deno task fmt
 
-# Linterを実行
+# Run linter
 deno task lint
 ```
 
-## プロジェクト構造
+## Project Structure
 
 ```
 Sapphillon_CLI/
-├── .devcontainer/          # Dev Container設定
+├── .devcontainer/          # Dev Container configuration
 │   └── devcontainer.json
 ├── .github/
 │   └── workflows/          # GitHub Actions CI/CD
 │       └── ci.yml
 ├── src/
-│   ├── commands/           # CLIコマンドの実装
+│   ├── commands/           # CLI command implementations
 │   │   ├── greet.ts
 │   │   └── greet_test.ts
-│   └── version.ts          # バージョン情報
-├── main.ts                 # CLIエントリーポイント
-├── main_test.ts            # メインのテスト
-├── deno.json               # Deno設定ファイル
-├── Makefile                # Make タスク定義
-├── .gitignore              # Git無視ファイル
-└── README.md               # プロジェクト概要
+│   └── version.ts          # Version information
+├── main.ts                 # CLI entry point
+├── main_test.ts            # Main tests
+├── deno.json               # Deno configuration file
+├── Makefile                # Make task definitions
+├── .gitignore              # Git ignore file
+└── README.md               # Project overview
 ```
 
-## 新しいコマンドの追加
+## Adding New Commands
 
-1. `src/commands/`ディレクトリに新しいコマンドファイルを作成：
+1. Create a new command file in the `src/commands/` directory:
 
 ```typescript
 // src/commands/mycommand.ts
@@ -131,7 +131,7 @@ export async function myCommand(options: string): Promise<void> {
 }
 ```
 
-2. テストファイルを作成：
+2. Create a test file:
 
 ```typescript
 // src/commands/mycommand_test.ts
@@ -144,153 +144,153 @@ Deno.test("myCommand executes without error", async () => {
 });
 ```
 
-3. `main.ts`にコマンドを登録：
+3. Register the command in `main.ts`:
 
 ```typescript
 import { myCommand } from "./src/commands/mycommand.ts";
 
-// switchステートメント内に追加
+// Add within the switch statement
 case "mycommand":
   await myCommand(args.option);
   break;
 ```
 
-## テスト
+## Testing
 
-### テストの実行
+### Running Tests
 
 ```bash
-# すべてのテストを実行
+# Run all tests
 make test
 
-# または
+# Or
 deno task test
 
-# 特定のテストファイルを実行
+# Run a specific test file
 deno test src/commands/greet_test.ts
 ```
 
-### テストの書き方
+### Writing Tests
 
-- ファイル名は `*_test.ts` パターンを使用
-- `jsr:@std/assert` からアサーション関数をインポート
-- `Deno.test()` を使用してテストを定義
+- Use the `*_test.ts` pattern for file names
+- Import assertion functions from `jsr:@std/assert`
+- Use `Deno.test()` to define tests
 
-## コード品質
+## Code Quality
 
-### フォーマット
+### Formatting
 
 ```bash
-# コードを自動フォーマット
+# Auto-format code
 make fmt
 
-# フォーマットをチェック（変更なし）
+# Check formatting (no changes)
 make fmt-check
 ```
 
-フォーマット設定は`deno.json`で設定されています：
-- 2スペースインデント
-- セミコロン使用
-- ダブルクォート
-- 行幅100文字
+Formatting settings are configured in `deno.json`:
+- 2-space indentation
+- Semicolons used
+- Double quotes
+- Line width of 100 characters
 
 ### Lint
 
 ```bash
-# Linterを実行
+# Run linter
 make lint
 ```
 
-Denoの組み込みLinterが、一般的な問題やアンチパターンをチェックします。
+Deno's built-in linter checks for common issues and anti-patterns.
 
 ## CI/CD
 
-GitHub Actionsを使用して、以下を自動的に実行します：
+GitHub Actions automatically runs the following:
 
-- **テスト**: すべてのテストを実行
-- **フォーマットチェック**: コードスタイルを検証
-- **Lint**: コード品質をチェック
-- **ビルド検証**: CLIが正常に実行できることを確認
+- **Tests**: Run all tests
+- **Format Check**: Verify code style
+- **Lint**: Check code quality
+- **Build Verification**: Ensure the CLI runs correctly
 
-プルリクエストまたはmain/developブランチへのプッシュ時に自動実行されます。
+Runs automatically on pull requests or pushes to the main/develop branch.
 
-## CLIの実行
+## Running the CLI
 
-### 開発中
+### During Development
 
 ```bash
-# ヘルプを表示
+# Show help
 deno run --allow-read --allow-write --allow-net main.ts --help
 
-# バージョンを表示
+# Show version
 deno run --allow-read --allow-write --allow-net main.ts --version
 
-# greetコマンドを実行
+# Run greet command
 deno run --allow-read --allow-write --allow-net main.ts greet --name Alice
 ```
 
-### Makeを使用
+### Using Make
 
 ```bash
-# 引数を渡す
+# Pass arguments
 make run ARGS="greet --name Alice"
 make run ARGS="--version"
 ```
 
-## パーミッション
+## Permissions
 
-Denoはセキュアバイデフォルトです。以下のパーミッションを使用しています：
+Deno is secure by default. We use the following permissions:
 
-- `--allow-read`: ファイルシステムの読み取り
-- `--allow-write`: ファイルシステムの書き込み
-- `--allow-net`: ネットワークアクセス
+- `--allow-read`: File system read access
+- `--allow-write`: File system write access
+- `--allow-net`: Network access
 
-必要に応じて、より細かい制御のためにパーミッションを調整できます。
+You can adjust permissions for finer control as needed.
 
-## トラブルシューティング
+## Troubleshooting
 
-### Denoコマンドが見つからない
+### Deno Command Not Found
 
-Denoがインストールされているか確認し、PATHに追加されているか確認してください：
+Verify that Deno is installed and added to your PATH:
 
 ```bash
-# Denoのバージョンを確認
+# Check Deno version
 deno --version
 
-# PATHに追加（~/.bashrc または ~/.zshrc に追加）
+# Add to PATH (add to ~/.bashrc or ~/.zshrc)
 export PATH="$HOME/.deno/bin:$PATH"
 ```
 
-### テストが失敗する
+### Tests Failing
 
-1. すべての依存関係が最新であることを確認
-2. `deno cache main.ts` でキャッシュをリフレッシュ
-3. パーミッションエラーの場合、必要なフラグを追加
+1. Ensure all dependencies are up to date
+2. Refresh the cache with `deno cache main.ts`
+3. If you get permission errors, add the necessary flags
 
-### フォーマットの問題
+### Formatting Issues
 
 ```bash
-# 自動修正
+# Auto-fix
 make fmt
 
-# または手動でチェック
+# Or check manually
 deno fmt --check
 ```
 
-## リソース
+## Resources
 
-- [Deno公式ドキュメント](https://deno.land/manual)
-- [Deno標準ライブラリ](https://deno.land/std)
-- [JSR（JavaScript Registry）](https://jsr.io/)
+- [Deno Official Documentation](https://deno.land/manual)
+- [Deno Standard Library](https://deno.land/std)
+- [JSR (JavaScript Registry)](https://jsr.io/)
 
-## コントリビューション
+## Contributing
 
-1. 新しいブランチを作成: `git checkout -b feature/my-feature`
-2. 変更を加える
-3. テストを実行: `make test`
-4. フォーマットとLint: `make fmt && make lint`
-5. コミット: `git commit -am 'Add new feature'`
-6. プッシュ: `git push origin feature/my-feature`
-7. プルリクエストを作成
+1. Create a new branch: `git checkout -b feature/my-feature`
+2. Make changes
+3. Run tests: `make test`
+4. Format and lint: `make fmt && make lint`
+5. Commit: `git commit -am 'Add new feature'`
+6. Push: `git push origin feature/my-feature`
+7. Create a pull request
 
-すべてのプルリクエストはCIチェックをパスする必要があります。
+All pull requests must pass CI checks.
