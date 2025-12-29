@@ -111,6 +111,8 @@ Sapphillon_CLI/
 │   ├── commands/           # CLI command implementations
 │   │   ├── greet.ts
 │   │   └── greet_test.ts
+│   ├── utils/              # Shared utilities
+│   │   └── args.ts
 │   └── version.ts          # Version information
 ├── main.ts                 # CLI entry point
 ├── main_test.ts            # Main tests
@@ -126,21 +128,22 @@ Sapphillon_CLI/
 
 ```typescript
 // src/commands/mycommand.ts
-export async function myCommand(options: string): Promise<void> {
+export function myCommand(options: string): void {
   console.log(`Executing my command with: ${options}`);
 }
 ```
+
+**Note:** Commands can be synchronous (as shown) or asynchronous. For async commands, use `async function` and return `Promise<void>`, and make sure to use `await` when calling them from an async `main` function.
 
 2. Create a test file:
 
 ```typescript
 // src/commands/mycommand_test.ts
-import { assertEquals } from "jsr:@std/assert";
 import { myCommand } from "./mycommand.ts";
 
-Deno.test("myCommand executes without error", async () => {
-  await myCommand("test");
-  assertEquals(true, true);
+Deno.test("myCommand executes without error", () => {
+  myCommand("test");
+  // If we get here without error, the test passes
 });
 ```
 
@@ -151,7 +154,7 @@ import { myCommand } from "./src/commands/mycommand.ts";
 
 // Add within the switch statement
 case "mycommand":
-  await myCommand(args.option);
+  myCommand(args.option as string || "default");
   break;
 ```
 

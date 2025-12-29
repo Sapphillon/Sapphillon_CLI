@@ -23,9 +23,13 @@ function main() {
   const command = args._[0]?.toString();
 
   switch (command) {
-    case "greet":
-      greet((args.name as string) || "World");
+    case "greet": {
+      const name = typeof args.name === "string" && args.name.trim().length > 0
+        ? args.name
+        : "World";
+      greet(name);
       break;
+    }
     default:
       if (command) {
         console.error(`Unknown command: ${command}`);

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "exports": "./main.ts",
   "tasks": {
-    "dev": "deno run --watch main.ts",
+    "dev": "deno run --watch --allow-read --allow-write --allow-net main.ts",
     "start": "deno run --allow-read --allow-write --allow-net main.ts",
     "test": "deno test --allow-read --allow-write",
     "lint": "deno lint",
@@ -11,11 +11,11 @@
     "fmt:check": "deno fmt --check"
   },
   "lint": {
-    "include": ["src/", "main.ts"],
+    "include": ["**/*.ts"],
     "exclude": []
   },
   "fmt": {
-    "include": ["src/", "main.ts"],
+    "include": ["**/*.ts"],
     "useTabs": false,
     "lineWidth": 100,
     "indentWidth": 2,
