@@ -1,13 +1,12 @@
 import { parseArgs } from "./src/utils/args.ts";
 import { VERSION } from "./src/version.ts";
+import { main } from "./main.ts";
 
 Deno.test("main function exists and is callable", () => {
-  // Import main dynamically to avoid side effects
-  import("./main.ts").then((mod) => {
-    if (typeof mod.main !== "function") {
-      throw new Error("main is not a function");
-    }
-  });
+  // Test that main is defined and is a function
+  if (typeof main !== "function") {
+    throw new Error("main is not a function");
+  }
 });
 
 Deno.test("parseArgs correctly parses version flag", () => {
