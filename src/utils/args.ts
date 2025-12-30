@@ -13,6 +13,8 @@ const FLAG_ALIASES: { [key: string]: string } = {
   h: "help",
   v: "version",
   n: "name",
+  p: "project",
+  o: "output",
 };
 
 /**

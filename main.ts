@@ -3,11 +3,12 @@
 import { parseArgs } from "./src/utils/args.ts";
 import { VERSION } from "./src/version.ts";
 import { greet } from "./src/commands/greet.ts";
+import { build } from "./src/commands/build.ts";
 
 /**
  * Main CLI entry point
  */
-function main() {
+async function main() {
   const args = parseArgs(Deno.args);
 
   if (args.version) {
@@ -30,6 +31,16 @@ function main() {
       greet(name);
       break;
     }
+    case "build": {
+      const projectDir = typeof args.project === "string" && args.project.trim().length > 0
+        ? args.project
+        : Deno.cwd();
+      const outputDir = typeof args.output === "string" && args.output.trim().length > 0
+        ? args.output
+        : undefined;
+      await build({ projectDir, outputDir });
+      break;
+    }
     default:
       if (command) {
         console.error(`Unknown command: ${command}`);
@@ -49,14 +60,19 @@ USAGE:
   sapphillon [COMMAND] [OPTIONS]
 
 COMMANDS:
+  build       Build a plugin package
   greet       Greet someone
 
 OPTIONS:
   -h, --help      Show this help message
   -v, --version   Show version information
   -n, --name      Name to use (for greet command)
+  -p, --project   Project directory (for build command, default: current directory)
+  -o, --output    Output directory (for build command, default: same as project)
 
 EXAMPLES:
+  sapphillon build
+  sapphillon build --project ./my-plugin
   sapphillon greet
   sapphillon greet --name Alice
   sapphillon --version
