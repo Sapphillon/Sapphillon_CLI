@@ -10,6 +10,25 @@ export interface BuildOptions {
   outputDir?: string;
 }
 
+export class BuildError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "BuildError";
+  }
+}
+
+/**
+ * Escape a string for use in JavaScript string literal
+ */
+function escapeJsString(str: string): string {
+  return str
+    .replace(/\\/g, "\\\\")
+    .replace(/"/g, '\\"')
+    .replace(/\n/g, "\\n")
+    .replace(/\r/g, "\\r")
+    .replace(/\t/g, "\\t");
+}
+
 /**
  * Build function declarations (without export keyword) for the package.js
  */
@@ -28,21 +47,21 @@ function generateFunctionDeclarations(functions: FunctionInfo[]): string {
 function generateFunctionsObject(functions: FunctionInfo[]): string {
   const entries = functions.map((fn) => {
     const permissions = fn.permissions.map((p) =>
-      `{type: "${p.type}", resource: "${p.resource}"}`
+      `{type: "${escapeJsString(p.type)}", resource: "${escapeJsString(p.resource)}"}`
     ).join(", ");
 
     const parameters = fn.parameters.map((p) =>
-      `{ name: "${p.name}", idx: ${p.idx}, type: "${p.type}", description: "${p.description}" }`
+      `{ name: "${escapeJsString(p.name)}", idx: ${p.idx}, type: "${escapeJsString(p.type)}", description: "${escapeJsString(p.description)}" }`
     ).join(",\n        ");
 
     const returns = fn.returns.map((r) =>
-      `{ type: "${r.type}", idx: ${r.idx}, description: "${r.description}" }`
+      `{ type: "${escapeJsString(r.type)}", idx: ${r.idx}, description: "${escapeJsString(r.description)}" }`
     ).join(",\n        ");
 
     return `    ${fn.name}: {
       handler: ${fn.name},
       permissions: [${permissions}],
-      description: "${fn.description}",
+      description: "${escapeJsString(fn.description)}",
       parameters: [
         ${parameters}
       ],
@@ -69,8 +88,7 @@ export async function build(options: BuildOptions): Promise<void> {
     packageTomlContent = await Deno.readTextFile(packageTomlPath);
   } catch (error) {
     if (error instanceof Deno.errors.NotFound) {
-      console.error(`Error: package.toml not found at ${packageTomlPath}`);
-      Deno.exit(1);
+      throw new BuildError(`package.toml not found at ${packageTomlPath}`);
     }
     throw error;
   }
@@ -85,8 +103,7 @@ export async function build(options: BuildOptions): Promise<void> {
     entryContent = await Deno.readTextFile(entryPath);
   } catch (error) {
     if (error instanceof Deno.errors.NotFound) {
-      console.error(`Error: Entry file not found at ${entryPath}`);
-      Deno.exit(1);
+      throw new BuildError(`Entry file not found at ${entryPath}`);
     }
     throw error;
   }
@@ -103,10 +120,10 @@ export async function build(options: BuildOptions): Promise<void> {
 
 Sapphillon.Package = {
   meta: {
-    name: "${packageToml.package.name}",
-    version: "${packageToml.package.version}",
-    description: "${packageToml.package.description}",
-    package_id: "${packageToml.package.package_id}"
+    name: "${escapeJsString(packageToml.package.name)}",
+    version: "${escapeJsString(packageToml.package.version)}",
+    description: "${escapeJsString(packageToml.package.description)}",
+    package_id: "${escapeJsString(packageToml.package.package_id)}"
   },
   functions: {
 ${generateFunctionsObject(functions)}

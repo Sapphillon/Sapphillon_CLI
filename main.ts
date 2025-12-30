@@ -3,7 +3,7 @@
 import { parseArgs } from "./src/utils/args.ts";
 import { VERSION } from "./src/version.ts";
 import { greet } from "./src/commands/greet.ts";
-import { build } from "./src/commands/build.ts";
+import { build, BuildError } from "./src/commands/build.ts";
 
 /**
  * Main CLI entry point
@@ -38,7 +38,15 @@ async function main() {
       const outputDir = typeof args.output === "string" && args.output.trim().length > 0
         ? args.output
         : undefined;
-      await build({ projectDir, outputDir });
+      try {
+        await build({ projectDir, outputDir });
+      } catch (error) {
+        if (error instanceof BuildError) {
+          console.error(`Error: ${error.message}`);
+          Deno.exit(1);
+        }
+        throw error;
+      }
       break;
     }
     default:
