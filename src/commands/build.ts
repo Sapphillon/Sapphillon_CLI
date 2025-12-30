@@ -4,6 +4,7 @@
 
 import { parsePackageToml } from "../utils/parsers/toml.ts";
 import { type FunctionInfo, parseJavaScript } from "../utils/parsers/jsdoc.ts";
+import { bundle, hasImports } from "../utils/bundler.ts";
 
 export interface BuildOptions {
   projectDir: string;
@@ -30,15 +31,10 @@ function escapeJsString(str: string): string {
 }
 
 /**
- * Build function declarations (without export keyword) for the package.js
+ * Check if entry file is TypeScript
  */
-function generateFunctionDeclarations(functions: FunctionInfo[]): string {
-  return functions.map((fn) => {
-    const params = fn.parameters.map((p) => p.name).join(", ");
-    return `function ${fn.name}(${params}) {
-  ${fn.body}
-}`;
-  }).join("\n\n");
+function isTypeScript(entryPath: string): boolean {
+  return entryPath.endsWith(".ts") || entryPath.endsWith(".tsx");
 }
 
 /**
@@ -76,6 +72,7 @@ function generateFunctionsObject(functions: FunctionInfo[]): string {
 
 /**
  * Build a plugin package from source files
+ * Supports JavaScript and TypeScript with imports - bundles all dependencies into a single file
  */
 export async function build(options: BuildOptions): Promise<void> {
   const { projectDir, outputDir = projectDir } = options;
@@ -95,7 +92,7 @@ export async function build(options: BuildOptions): Promise<void> {
 
   const packageToml = parsePackageToml(packageTomlContent);
 
-  // Read the entry file (e.g., src/index.js)
+  // Read the entry file (e.g., src/index.js or src/index.ts)
   const entryPath = `${projectDir}/${packageToml.package.entry}`;
   let entryContent: string;
 
@@ -108,15 +105,49 @@ export async function build(options: BuildOptions): Promise<void> {
     throw error;
   }
 
-  // Parse functions from the entry file
+  // Parse functions from the original source file (to get JSDoc annotations)
   const functions = parseJavaScript(entryContent);
 
   if (functions.length === 0) {
     console.warn("Warning: No exported functions found in entry file");
   }
 
-  // Generate package.js content
-  const packageJsContent = `${generateFunctionDeclarations(functions)}
+  // Check if we need to bundle (TypeScript or has imports)
+  const needsBundling = isTypeScript(entryPath) || hasImports(entryContent);
+  let bundledCode = "";
+
+  if (needsBundling) {
+    console.log("📦 Bundling dependencies...");
+    try {
+      const result = await bundle({
+        entryPoint: entryPath,
+        projectDir: projectDir,
+      });
+      bundledCode = result.code;
+
+      // Remove export statements from bundled code since we're creating a package
+      bundledCode = bundledCode
+        .replace(/^export\s+\{[^}]*\};\s*$/gm, "")
+        .replace(/^export\s+/gm, "")
+        .trim();
+
+      if (result.isTypeScript) {
+        console.log("   - TypeScript transpiled");
+      }
+    } catch (error) {
+      throw new BuildError(
+        `Bundling failed: ${error instanceof Error ? error.message : String(error)}`,
+      );
+    }
+  } else {
+    // For simple JS files without imports, just remove exports
+    bundledCode = entryContent
+      .replace(/^export\s+/gm, "")
+      .trim();
+  }
+
+  // Generate package.js content with bundled code and Sapphillon.Package metadata
+  const packageJsContent = `${bundledCode}
 
 Sapphillon.Package = {
   meta: {
@@ -137,4 +168,7 @@ ${generateFunctionsObject(functions)}
 
   console.log(`✅ Build complete: ${outputPath}`);
   console.log(`   - Found ${functions.length} function(s)`);
+  if (needsBundling) {
+    console.log(`   - Dependencies bundled into single file`);
+  }
 }

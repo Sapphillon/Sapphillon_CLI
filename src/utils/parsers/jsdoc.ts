@@ -36,8 +36,9 @@ export function parseJavaScript(content: string): FunctionInfo[] {
   const functions: FunctionInfo[] = [];
 
   // Match JSDoc comment followed by export function
+  // Handles both JavaScript and TypeScript syntax (with optional type annotations)
   const jsdocFunctionRegex =
-    /\/\*\*\s*([\s\S]*?)\s*\*\/\s*\nexport\s+function\s+(\w+)\s*\(([^)]*)\)\s*\{([\s\S]*?)\n\}/g;
+    /\/\*\*\s*([\s\S]*?)\s*\*\/\s*\nexport\s+function\s+(\w+)\s*\(([^)]*)\)(?:\s*:\s*[^{]+)?\s*\{([\s\S]*?)\n\}/g;
 
   let match;
   while ((match = jsdocFunctionRegex.exec(content)) !== null) {

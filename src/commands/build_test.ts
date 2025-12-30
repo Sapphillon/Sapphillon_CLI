@@ -210,3 +210,136 @@ export function test(msg) {
     await Deno.remove(testDir, { recursive: true });
   }
 });
+
+Deno.test("build - bundles JavaScript files with imports", async () => {
+  const testDir = "/tmp/build-test-bundle-" + Date.now();
+
+  try {
+    await Deno.mkdir(`${testDir}/src`, { recursive: true });
+
+    await Deno.writeTextFile(
+      `${testDir}/package.toml`,
+      `[package]
+name = "bundled-plugin"
+version = "1.0.0"
+description = "Plugin with imports"
+entry = "src/index.js"
+package_id = "com.bundle"
+`,
+    );
+
+    // Create a utility file
+    await Deno.writeTextFile(
+      `${testDir}/src/utils.js`,
+      `/**
+ * Helper function
+ * @param {number} x - Input
+ * @returns {number} Result
+ */
+export function helper(x) {
+  return x * 2;
+}
+`,
+    );
+
+    // Create entry file that imports the utility
+    await Deno.writeTextFile(
+      `${testDir}/src/index.js`,
+      `import { helper } from './utils.js';
+
+/**
+ * Main function
+ * @param {number} n - Number
+ * @returns {number} Result
+ */
+export function main(n) {
+  return helper(n);
+}
+`,
+    );
+
+    const originalLog = console.log;
+    const originalWarn = console.warn;
+    console.log = () => {};
+    console.warn = () => {};
+
+    try {
+      await build({ projectDir: testDir });
+    } finally {
+      console.log = originalLog;
+      console.warn = originalWarn;
+    }
+
+    const packageJs = await Deno.readTextFile(`${testDir}/package.js`);
+
+    // Verify bundled code contains both functions
+    if (!packageJs.includes("function helper(x)")) {
+      throw new Error("package.js should contain the bundled helper function");
+    }
+    if (!packageJs.includes("function main(n)")) {
+      throw new Error("package.js should contain the main function");
+    }
+    // Check for actual import statements (not just the word "import" in descriptions)
+    if (/^\s*import\s+/m.test(packageJs)) {
+      throw new Error("package.js should not contain import statements");
+    }
+  } finally {
+    await Deno.remove(testDir, { recursive: true });
+  }
+});
+
+Deno.test("build - handles TypeScript files", async () => {
+  const testDir = "/tmp/build-test-ts-" + Date.now();
+
+  try {
+    await Deno.mkdir(`${testDir}/src`, { recursive: true });
+
+    await Deno.writeTextFile(
+      `${testDir}/package.toml`,
+      `[package]
+name = "ts-plugin"
+version = "1.0.0"
+description = "TypeScript plugin"
+entry = "src/index.ts"
+package_id = "com.ts"
+`,
+    );
+
+    await Deno.writeTextFile(
+      `${testDir}/src/index.ts`,
+      `/**
+ * TypeScript function
+ * @param {string} name - Name
+ * @returns {string} Greeting
+ */
+export function greet(name: string): string {
+  return \`Hello, \${name}\`;
+}
+`,
+    );
+
+    const originalLog = console.log;
+    const originalWarn = console.warn;
+    console.log = () => {};
+    console.warn = () => {};
+
+    try {
+      await build({ projectDir: testDir });
+    } finally {
+      console.log = originalLog;
+      console.warn = originalWarn;
+    }
+
+    const packageJs = await Deno.readTextFile(`${testDir}/package.js`);
+
+    // Verify TypeScript types are stripped
+    if (!packageJs.includes("function greet(name)")) {
+      throw new Error("TypeScript types should be stripped from function parameters");
+    }
+    if (packageJs.includes(": string")) {
+      throw new Error("TypeScript type annotations should be removed");
+    }
+  } finally {
+    await Deno.remove(testDir, { recursive: true });
+  }
+});
