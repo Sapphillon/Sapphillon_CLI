@@ -61,13 +61,19 @@ export function readFile(path) {
     throw new Error(`Expected 2 permissions, got ${fn.permissions.length}`);
   }
   if (fn.permissions[0].type !== "FileSystemRead") {
-    throw new Error(`Expected first permission type 'FileSystemRead', got '${fn.permissions[0].type}'`);
+    throw new Error(
+      `Expected first permission type 'FileSystemRead', got '${fn.permissions[0].type}'`,
+    );
   }
   if (fn.permissions[0].resource !== "/etc") {
-    throw new Error(`Expected first permission resource '/etc', got '${fn.permissions[0].resource}'`);
+    throw new Error(
+      `Expected first permission resource '/etc', got '${fn.permissions[0].resource}'`,
+    );
   }
   if (fn.permissions[1].type !== "FileSystemWrite") {
-    throw new Error(`Expected second permission type 'FileSystemWrite', got '${fn.permissions[1].type}'`);
+    throw new Error(
+      `Expected second permission type 'FileSystemWrite', got '${fn.permissions[1].type}'`,
+    );
   }
 });
 

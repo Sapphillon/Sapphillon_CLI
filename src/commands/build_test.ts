@@ -37,7 +37,7 @@ async function cleanupTestPlugin(dir: string): Promise<void> {
 }
 
 Deno.test("build - creates package.js from source files", async () => {
-  const testDir = "/tmp/build-test-" + Date.now();
+  const testDir = await Deno.makeTempDir({ prefix: "build-test-" });
 
   try {
     await createTestPlugin(testDir);
@@ -79,7 +79,7 @@ Deno.test("build - creates package.js from source files", async () => {
 });
 
 Deno.test("build - includes function metadata", async () => {
-  const testDir = "/tmp/build-test-meta-" + Date.now();
+  const testDir = await Deno.makeTempDir({ prefix: "build-test-meta-" });
 
   try {
     await createTestPlugin(testDir);
@@ -114,12 +114,11 @@ Deno.test("build - includes function metadata", async () => {
 });
 
 Deno.test("build - respects custom output directory", async () => {
-  const testDir = "/tmp/build-test-output-" + Date.now();
-  const outputDir = "/tmp/build-test-output-result-" + Date.now();
+  const testDir = await Deno.makeTempDir({ prefix: "build-test-output-" });
+  const outputDir = await Deno.makeTempDir({ prefix: "build-test-output-result-" });
 
   try {
     await createTestPlugin(testDir);
-    await Deno.mkdir(outputDir, { recursive: true });
 
     // Capture output
     const originalLog = console.log;
@@ -143,8 +142,7 @@ Deno.test("build - respects custom output directory", async () => {
 });
 
 Deno.test("build - throws BuildError on missing package.toml", async () => {
-  const testDir = "/tmp/build-test-missing-" + Date.now();
-  await Deno.mkdir(testDir, { recursive: true });
+  const testDir = await Deno.makeTempDir({ prefix: "build-test-missing-" });
 
   try {
     await build({ projectDir: testDir });
@@ -162,7 +160,7 @@ Deno.test("build - throws BuildError on missing package.toml", async () => {
 });
 
 Deno.test("build - escapes special characters in strings", async () => {
-  const testDir = "/tmp/build-test-escape-" + Date.now();
+  const testDir = await Deno.makeTempDir({ prefix: "build-test-escape-" });
 
   try {
     await Deno.mkdir(`${testDir}/src`, { recursive: true });
@@ -212,7 +210,7 @@ export function test(msg) {
 });
 
 Deno.test("build - bundles JavaScript files with imports", async () => {
-  const testDir = "/tmp/build-test-bundle-" + Date.now();
+  const testDir = await Deno.makeTempDir({ prefix: "build-test-bundle-" });
 
   try {
     await Deno.mkdir(`${testDir}/src`, { recursive: true });
@@ -289,7 +287,7 @@ export function main(n) {
 });
 
 Deno.test("build - handles TypeScript files", async () => {
-  const testDir = "/tmp/build-test-ts-" + Date.now();
+  const testDir = await Deno.makeTempDir({ prefix: "build-test-ts-" });
 
   try {
     await Deno.mkdir(`${testDir}/src`, { recursive: true });

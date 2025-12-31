@@ -38,6 +38,19 @@ function isTypeScript(entryPath: string): boolean {
 }
 
 /**
+ * Join path segments, handling trailing slashes
+ */
+function joinPath(...segments: string[]): string {
+  return segments
+    .map((s, i) => {
+      if (i === 0) return s.replace(/\/+$/, "");
+      return s.replace(/^\/+|\/+$/g, "");
+    })
+    .filter((s) => s.length > 0)
+    .join("/");
+}
+
+/**
  * Generate the functions object for Sapphillon.Package
  */
 function generateFunctionsObject(functions: FunctionInfo[]): string {
@@ -46,24 +59,33 @@ function generateFunctionsObject(functions: FunctionInfo[]): string {
       `{type: "${escapeJsString(p.type)}", resource: "${escapeJsString(p.resource)}"}`
     ).join(", ");
 
-    const parameters = fn.parameters.map((p) =>
-      `{ name: "${escapeJsString(p.name)}", idx: ${p.idx}, type: "${escapeJsString(p.type)}", description: "${escapeJsString(p.description)}" }`
-    ).join(",\n        ");
+    // Handle empty arrays with cleaner formatting
+    const parametersContent = fn.parameters.length > 0
+      ? fn.parameters.map((p) =>
+        `{ name: "${escapeJsString(p.name)}", idx: ${p.idx}, type: "${
+          escapeJsString(p.type)
+        }", description: "${escapeJsString(p.description)}" }`
+      ).join(",\n        ")
+      : "";
 
-    const returns = fn.returns.map((r) =>
-      `{ type: "${escapeJsString(r.type)}", idx: ${r.idx}, description: "${escapeJsString(r.description)}" }`
-    ).join(",\n        ");
+    const returnsContent = fn.returns.length > 0
+      ? fn.returns.map((r) =>
+        `{ type: "${escapeJsString(r.type)}", idx: ${r.idx}, description: "${
+          escapeJsString(r.description)
+        }" }`
+      ).join(",\n        ")
+      : "";
+
+    // Format arrays based on whether they have content
+    const parametersStr = parametersContent ? `[\n        ${parametersContent}\n      ]` : "[]";
+    const returnsStr = returnsContent ? `[\n        ${returnsContent}\n      ]` : "[]";
 
     return `    ${fn.name}: {
       handler: ${fn.name},
       permissions: [${permissions}],
       description: "${escapeJsString(fn.description)}",
-      parameters: [
-        ${parameters}
-      ],
-      returns: [
-        ${returns}
-      ]
+      parameters: ${parametersStr},
+      returns: ${returnsStr}
     }`;
   });
 
@@ -78,7 +100,7 @@ export async function build(options: BuildOptions): Promise<void> {
   const { projectDir, outputDir = projectDir } = options;
 
   // Read package.toml
-  const packageTomlPath = `${projectDir}/package.toml`;
+  const packageTomlPath = joinPath(projectDir, "package.toml");
   let packageTomlContent: string;
 
   try {
@@ -93,7 +115,7 @@ export async function build(options: BuildOptions): Promise<void> {
   const packageToml = parsePackageToml(packageTomlContent);
 
   // Read the entry file (e.g., src/index.js or src/index.ts)
-  const entryPath = `${projectDir}/${packageToml.package.entry}`;
+  const entryPath = joinPath(projectDir, packageToml.package.entry);
   let entryContent: string;
 
   try {
@@ -127,7 +149,7 @@ export async function build(options: BuildOptions): Promise<void> {
 
       // Remove export statements from bundled code since we're creating a package
       bundledCode = bundledCode
-        .replace(/^export\s+\{[^}]*\};\s*$/gm, "")
+        .replace(/^export\s+\{[^}]*\};?\s*$/gm, "")
         .replace(/^export\s+/gm, "")
         .trim();
 
@@ -163,7 +185,7 @@ ${generateFunctionsObject(functions)}
 `;
 
   // Write package.js
-  const outputPath = `${outputDir}/package.js`;
+  const outputPath = joinPath(outputDir, "package.js");
   await Deno.writeTextFile(outputPath, packageJsContent);
 
   console.log(`✅ Build complete: ${outputPath}`);

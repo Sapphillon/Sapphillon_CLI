@@ -11,19 +11,29 @@ function dirname(path: string): string {
 }
 
 function normalizePath(path: string): string {
+  const isAbsolute = path.startsWith("/");
   const parts = path.split("/");
   const normalized: string[] = [];
 
   for (const part of parts) {
     if (part === "..") {
-      normalized.pop();
+      if (normalized.length > 0 && normalized[normalized.length - 1] !== "..") {
+        // Go up one directory when possible
+        normalized.pop();
+      } else if (!isAbsolute) {
+        // Preserve leading ".." for relative paths when there is no parent to pop
+        normalized.push("..");
+      }
     } else if (part !== "." && part !== "") {
       normalized.push(part);
     }
   }
 
   const result = normalized.join("/");
-  return path.startsWith("/") ? "/" + result : result;
+  if (isAbsolute) {
+    return result ? "/" + result : "/";
+  }
+  return result;
 }
 
 function resolvePath(base: string, relative: string): string {
@@ -109,13 +119,21 @@ function extractImports(
 function removeExports(code: string): string {
   return code
     .replace(/^export\s+default\s+/gm, "")
-    .replace(/^export\s+\{[^}]*\};\s*$/gm, "")
+    .replace(/^export\s+\{[^}]*\};?\s*$/gm, "")
     .replace(/^export\s+/gm, "");
 }
 
 /**
  * Strip TypeScript type annotations from code (simple approach)
- * This handles common patterns but may not cover all TypeScript syntax
+ * This handles common patterns but may not cover all TypeScript syntax.
+ *
+ * Known limitations:
+ * - Complex generics with nested brackets (e.g., `Map<string, Array<number>>`)
+ * - Union/intersection types with parentheses
+ * - Multi-line interface/type declarations with nested objects
+ * - Conditional types and mapped types
+ *
+ * For complex TypeScript codebases, consider using a proper TypeScript compiler.
  */
 function stripTypeAnnotations(code: string): string {
   // Remove type annotations from function parameters: (param: Type) -> (param)
