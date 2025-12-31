@@ -82,22 +82,23 @@ jobs:
           echo "New version: $NEW_VERSION"
 
       - name: Update version in files
+        env:
+          NEW_VERSION: ${{ steps.calc_version.outputs.new_version }}
         run: |
-          NEW_VERSION="${{ steps.calc_version.outputs.new_version }}"
-          
           # Update deno.json using Deno's JSON parsing
           deno eval "
             const config = JSON.parse(Deno.readTextFileSync('deno.json'));
-            config.version = '$NEW_VERSION';
+            config.version = Deno.env.get('NEW_VERSION');
             Deno.writeTextFileSync('deno.json', JSON.stringify(config, null, 2) + '\n');
           "
           
           # Update src/version.ts
           deno eval "
+            const newVersion = Deno.env.get('NEW_VERSION');
             const content = Deno.readTextFileSync('src/version.ts');
             const updated = content.replace(
               /export const VERSION = \"[^\"]*\"/,
-              'export const VERSION = \"$NEW_VERSION\"'
+              'export const VERSION = \"' + newVersion + '\"'
             );
             Deno.writeTextFileSync('src/version.ts', updated);
           "
