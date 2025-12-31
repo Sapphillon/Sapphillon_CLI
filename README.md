@@ -113,12 +113,36 @@ Sapphillon_CLI/
 
 ## CI/CD
 
-This project uses GitHub Actions for continuous integration. On every push and pull request, the following checks are run:
+This project uses GitHub Actions for continuous integration and releases.
+
+### Continuous Integration
+
+On every push and pull request, the following checks are run:
 
 - Tests
 - Linting
 - Code formatting
 - Build verification
+
+### Release Workflow
+
+This project includes an automated release workflow that can be triggered manually from the GitHub Actions tab:
+
+1. Go to the [Actions tab](https://github.com/Sapphillon/Sapphillon_CLI/actions/workflows/release.yml) in the repository
+2. Click "Run workflow"
+3. Select the version bump type:
+   - **patch**: Bug fixes and minor changes (0.1.0 → 0.1.1)
+   - **minor**: New features, backward compatible (0.1.0 → 0.2.0)
+   - **major**: Breaking changes (0.1.0 → 1.0.0)
+4. Choose whether this is a pre-release
+5. Click "Run workflow"
+
+The workflow will automatically:
+- Bump the version in `deno.json` and `src/version.ts`
+- Run tests, linting, and formatting checks
+- Commit the version bump
+- Create a Git tag
+- Create a GitHub release with installation instructions
 
 ## Contributing
 
