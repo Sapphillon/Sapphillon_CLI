@@ -1,0 +1,137 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_bump:
+        description: 'Version bump type'
+        required: true
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+      prerelease:
+        description: 'Is this a pre-release?'
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.x
+
+      - name: Get current version
+        id: get_version
+        run: |
+          CURRENT_VERSION=$(grep -oP '(?<="version": ")[^"]*' deno.json)
+          echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+          echo "Current version: $CURRENT_VERSION"
+
+      - name: Calculate new version
+        id: calc_version
+        run: |
+          VERSION="${{ steps.get_version.outputs.current_version }}"
+          BUMP_TYPE="${{ github.event.inputs.version_bump }}"
+          
+          # Split version into parts
+          IFS='.' read -ra PARTS <<< "$VERSION"
+          MAJOR="${PARTS[0]}"
+          MINOR="${PARTS[1]}"
+          PATCH="${PARTS[2]}"
+          
+          # Bump version based on type
+          case "$BUMP_TYPE" in
+            major)
+              MAJOR=$((MAJOR + 1))
+              MINOR=0
+              PATCH=0
+              ;;
+            minor)
+              MINOR=$((MINOR + 1))
+              PATCH=0
+              ;;
+            patch)
+              PATCH=$((PATCH + 1))
+              ;;
+          esac
+          
+          NEW_VERSION="$MAJOR.$MINOR.$PATCH"
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "New version: $NEW_VERSION"
+
+      - name: Update version in files
+        run: |
+          NEW_VERSION="${{ steps.calc_version.outputs.new_version }}"
+          
+          # Update deno.json
+          sed -i "s/\"version\": \"[^\"]*\"/\"version\": \"$NEW_VERSION\"/" deno.json
+          
+          # Update src/version.ts
+          sed -i "s/export const VERSION = \"[^\"]*\"/export const VERSION = \"$NEW_VERSION\"/" src/version.ts
+          
+          echo "Updated version to $NEW_VERSION"
+
+      - name: Run tests
+        run: deno task test
+
+      - name: Check formatting
+        run: deno task fmt:check
+
+      - name: Run linter
+        run: deno task lint
+
+      - name: Commit version bump
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add deno.json src/version.ts
+          git commit -m "chore: bump version to ${{ steps.calc_version.outputs.new_version }}"
+          git push
+
+      - name: Create Git tag
+        run: |
+          TAG="v${{ steps.calc_version.outputs.new_version }}"
+          git tag -a "$TAG" -m "Release $TAG"
+          git push origin "$TAG"
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.calc_version.outputs.new_version }}
+          release_name: Release v${{ steps.calc_version.outputs.new_version }}
+          body: |
+            ## Sapphillon CLI v${{ steps.calc_version.outputs.new_version }}
+            
+            ### Installation
+            
+            Install the latest version using Deno:
+            
+            ```bash
+            deno install --allow-read --allow-write --allow-net --allow-run --allow-env -n sapphillon https://raw.githubusercontent.com/Sapphillon/Sapphillon_CLI/v${{ steps.calc_version.outputs.new_version }}/main.ts
+            ```
+            
+            Or install from the main branch (latest):
+            
+            ```bash
+            deno install --allow-read --allow-write --allow-net --allow-run --allow-env -n sapphillon https://raw.githubusercontent.com/Sapphillon/Sapphillon_CLI/main/main.ts
+            ```
+          draft: false
+          prerelease: ${{ github.event.inputs.prerelease }}
