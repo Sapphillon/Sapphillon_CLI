@@ -120,13 +120,15 @@ export function add(a: number, b: number): number {
 }
 
 /**
- * Validate and normalize a directory path to prevent directory traversal
+ * Validate a directory path to prevent directory traversal
  */
 function validatePath(path: string): string {
-  // Normalize the path to resolve any '..' or '.' segments
+  // Normalize the path
   const normalized = path.replace(/\\/g, "/");
 
-  // Check for directory traversal attempts
+  // Check for directory traversal patterns
+  // This checks for literal '../' sequences which is sufficient for our use case
+  // since we're creating new directories, not resolving existing paths
   if (normalized.includes("../") || normalized.startsWith("..")) {
     throw new InitError(
       `Invalid path: '${path}' contains directory traversal sequences`,
