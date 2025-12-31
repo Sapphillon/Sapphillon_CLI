@@ -5,6 +5,7 @@
 import { parsePackageToml } from "../utils/parsers/toml.ts";
 import { type FunctionInfo, parseJavaScript } from "../utils/parsers/jsdoc.ts";
 import { bundle, hasImports } from "../utils/bundler.ts";
+import { joinPath } from "../utils/path.ts";
 
 export interface BuildOptions {
   projectDir: string;
@@ -35,19 +36,6 @@ function escapeJsString(str: string): string {
  */
 function isTypeScript(entryPath: string): boolean {
   return entryPath.endsWith(".ts") || entryPath.endsWith(".tsx");
-}
-
-/**
- * Join path segments, handling trailing slashes
- */
-function joinPath(...segments: string[]): string {
-  return segments
-    .map((s, i) => {
-      if (i === 0) return s.replace(/\/+$/, "");
-      return s.replace(/^\/+|\/+$/g, "");
-    })
-    .filter((s) => s.length > 0)
-    .join("/");
 }
 
 /**

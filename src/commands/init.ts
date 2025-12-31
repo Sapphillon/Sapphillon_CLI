@@ -2,6 +2,8 @@
  * Init command - creates a new plugin package development environment
  */
 
+import { joinPath } from "../utils/path.ts";
+
 export interface InitOptions {
   name: string;
   packageId?: string;
@@ -14,19 +16,6 @@ export class InitError extends Error {
     super(message);
     this.name = "InitError";
   }
-}
-
-/**
- * Join path segments, handling trailing slashes
- */
-function joinPath(...segments: string[]): string {
-  return segments
-    .map((s, i) => {
-      if (i === 0) return s.replace(/\/+$/, "");
-      return s.replace(/^\/+|\/+$/g, "");
-    })
-    .filter((s) => s.length > 0)
-    .join("/");
 }
 
 /**
