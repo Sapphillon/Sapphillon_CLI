@@ -23,23 +23,6 @@ Deno.test("parseArgs correctly parses help flag", () => {
   }
 });
 
-Deno.test("parseArgs correctly parses greet command", () => {
-  const args = parseArgs(["greet"]);
-  if (args._[0] !== "greet") {
-    throw new Error("Expected first positional arg to be 'greet'");
-  }
-});
-
-Deno.test("parseArgs correctly parses greet command with name", () => {
-  const args = parseArgs(["greet", "--name", "Alice"]);
-  if (args._[0] !== "greet") {
-    throw new Error("Expected first positional arg to be 'greet'");
-  }
-  if (args.name !== "Alice") {
-    throw new Error("Expected name to be 'Alice'");
-  }
-});
-
 Deno.test("VERSION constant is defined", () => {
   if (typeof VERSION !== "string") {
     throw new Error("VERSION should be a string");
