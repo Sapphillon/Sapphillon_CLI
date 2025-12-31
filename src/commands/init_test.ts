@@ -254,3 +254,83 @@ Deno.test("init - cleans up on error", async () => {
     await cleanupTestDir(testDir);
   }
 });
+
+Deno.test("init - creates TypeScript project when language is typescript", async () => {
+  const testDir = await Deno.makeTempDir({ prefix: "init-test-ts-" });
+  const pluginName = "ts-plugin";
+  const pluginDir = `${testDir}/${pluginName}`;
+
+  try {
+    const originalLog = console.log;
+    console.log = () => {};
+
+    try {
+      await init({ name: pluginName, directory: pluginDir, language: "typescript" });
+    } finally {
+      console.log = originalLog;
+    }
+
+    // Verify package.toml has TypeScript entry
+    const packageToml = await Deno.readTextFile(`${pluginDir}/package.toml`);
+    if (!packageToml.includes('entry = "src/index.ts"')) {
+      throw new Error("package.toml should have TypeScript entry point");
+    }
+
+    // Verify src/index.ts was created with TypeScript syntax
+    const indexTs = await Deno.readTextFile(`${pluginDir}/src/index.ts`);
+    if (!indexTs.includes("export function add(a: number, b: number): number")) {
+      throw new Error("src/index.ts should contain TypeScript function signature");
+    }
+    if (!indexTs.includes("@param {number} a")) {
+      throw new Error("src/index.ts should contain JSDoc comments");
+    }
+    if (!indexTs.includes("@permission")) {
+      throw new Error("src/index.ts should contain permission annotations");
+    }
+
+    // Verify index.js doesn't exist
+    try {
+      await Deno.stat(`${pluginDir}/src/index.js`);
+      throw new Error("src/index.js should not exist for TypeScript projects");
+    } catch (error) {
+      if (!(error instanceof Deno.errors.NotFound)) {
+        throw error;
+      }
+    }
+  } finally {
+    await cleanupTestDir(pluginDir);
+    await cleanupTestDir(testDir);
+  }
+});
+
+Deno.test("init - creates JavaScript project by default", async () => {
+  const testDir = await Deno.makeTempDir({ prefix: "init-test-default-" });
+  const pluginName = "default-plugin";
+  const pluginDir = `${testDir}/${pluginName}`;
+
+  try {
+    const originalLog = console.log;
+    console.log = () => {};
+
+    try {
+      await init({ name: pluginName, directory: pluginDir });
+    } finally {
+      console.log = originalLog;
+    }
+
+    // Verify package.toml has JavaScript entry
+    const packageToml = await Deno.readTextFile(`${pluginDir}/package.toml`);
+    if (!packageToml.includes('entry = "src/index.js"')) {
+      throw new Error("package.toml should have JavaScript entry point by default");
+    }
+
+    // Verify src/index.js was created
+    const indexJs = await Deno.readTextFile(`${pluginDir}/src/index.js`);
+    if (!indexJs.includes("export function add(a, b)")) {
+      throw new Error("src/index.js should contain JavaScript function signature");
+    }
+  } finally {
+    await cleanupTestDir(pluginDir);
+    await cleanupTestDir(testDir);
+  }
+});

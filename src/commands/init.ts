@@ -9,6 +9,7 @@ export interface InitOptions {
   packageId?: string;
   description?: string;
   directory?: string;
+  language?: "javascript" | "typescript";
 }
 
 export class InitError extends Error {
@@ -21,15 +22,19 @@ export class InitError extends Error {
 /**
  * Generate package.toml content
  */
-function generatePackageToml(options: InitOptions): string {
+function generatePackageToml(
+  options: InitOptions,
+  language: "javascript" | "typescript",
+): string {
   const packageId = options.packageId || "com.example";
   const description = options.description || `Plugin package for ${options.name}`;
+  const entry = language === "typescript" ? "src/index.ts" : "src/index.js";
 
   return `[package]
 name = "${options.name}"
 version = "1.0.0"
 description = "${description}"
-entry = "src/index.js"
+entry = "${entry}"
 package_id = "${packageId}"
 `;
 }
@@ -86,10 +91,28 @@ export function add(a, b) {
 }
 
 /**
+ * Generate src/index.ts content with example function
+ */
+function generateIndexTs(): string {
+  return `/**
+ * 2つの数値を加算します。
+ * @param {number} a - 足される数
+ * @param {number} b - 足す数
+ * @returns {number} 合計
+ * @permission ["FileSystemRead:/etc", "FileSystemWrite:/etc"]
+ */
+export function add(a: number, b: number): number {
+  return a + b;
+}
+`;
+}
+
+/**
  * Initialize a new plugin package development environment
  */
 export async function init(options: InitOptions): Promise<void> {
   const targetDir = options.directory || options.name;
+  const language = options.language || "javascript";
 
   // Check if directory already exists
   try {
@@ -106,13 +129,14 @@ export async function init(options: InitOptions): Promise<void> {
 
   // Create directory structure
   console.log(`📁 Creating plugin package: ${options.name}`);
+  console.log(`   Language: ${language === "typescript" ? "TypeScript" : "JavaScript"}`);
 
   try {
     await Deno.mkdir(targetDir, { recursive: true });
     await Deno.mkdir(joinPath(targetDir, "src"), { recursive: true });
 
     // Generate and write files
-    const packageToml = generatePackageToml(options);
+    const packageToml = generatePackageToml(options, language);
     await Deno.writeTextFile(joinPath(targetDir, "package.toml"), packageToml);
     console.log(`   ✓ Created package.toml`);
 
@@ -120,14 +144,15 @@ export async function init(options: InitOptions): Promise<void> {
     await Deno.writeTextFile(joinPath(targetDir, ".gitignore"), gitignore);
     console.log(`   ✓ Created .gitignore`);
 
-    const indexJs = generateIndexJs();
-    await Deno.writeTextFile(joinPath(targetDir, "src", "index.js"), indexJs);
-    console.log(`   ✓ Created src/index.js`);
+    const entryFile = language === "typescript" ? "index.ts" : "index.js";
+    const entryContent = language === "typescript" ? generateIndexTs() : generateIndexJs();
+    await Deno.writeTextFile(joinPath(targetDir, "src", entryFile), entryContent);
+    console.log(`   ✓ Created src/${entryFile}`);
 
     console.log(`\n✅ Plugin package initialized successfully!`);
     console.log(`\nNext steps:`);
     console.log(`  1. cd ${targetDir}`);
-    console.log(`  2. Edit src/index.js to add your plugin functions`);
+    console.log(`  2. Edit src/${entryFile} to add your plugin functions`);
     console.log(`  3. Run 'sapphillon build' to build your package`);
   } catch (error) {
     // Clean up on error

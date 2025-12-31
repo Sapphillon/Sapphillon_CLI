@@ -73,8 +73,24 @@ async function main() {
         ? args.description
         : undefined;
 
+      // Parse language option
+      let language: "javascript" | "typescript" | undefined = undefined;
+      if (typeof args.language === "string" && args.language.trim().length > 0) {
+        const lang = args.language.toLowerCase();
+        if (lang === "typescript" || lang === "ts") {
+          language = "typescript";
+        } else if (lang === "javascript" || lang === "js") {
+          language = "javascript";
+        } else {
+          console.error(
+            `Error: Invalid language '${args.language}'. Use 'javascript' (js) or 'typescript' (ts)`,
+          );
+          Deno.exit(1);
+        }
+      }
+
       try {
-        await init({ name, directory, packageId, description });
+        await init({ name, directory, packageId, description, language });
       } catch (error) {
         if (error instanceof InitError) {
           console.error(`Error: ${error.message}`);
@@ -116,10 +132,12 @@ OPTIONS:
   -d, --directory     Target directory (for init command, default: plugin name)
   --package-id        Package ID (for init command, default: com.example)
   --description       Package description (for init command)
+  --language          Language for init command: 'javascript' (js) or 'typescript' (ts), default: javascript
 
 EXAMPLES:
   sapphillon init my-plugin
-  sapphillon init --name my-plugin --package-id com.mycompany
+  sapphillon init --name my-plugin --language typescript
+  sapphillon init --name my-plugin --package-id com.mycompany --language ts
   sapphillon build
   sapphillon build --project ./my-plugin
   sapphillon greet
