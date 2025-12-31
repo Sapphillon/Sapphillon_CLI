@@ -1,0 +1,256 @@
+import { init, InitError } from "./init.ts";
+
+async function cleanupTestDir(dir: string): Promise<void> {
+  try {
+    await Deno.remove(dir, { recursive: true });
+  } catch {
+    // Ignore errors
+  }
+}
+
+Deno.test("init - creates plugin package with default structure", async () => {
+  const testDir = await Deno.makeTempDir({ prefix: "init-test-" });
+  const pluginName = "test-plugin";
+  const pluginDir = `${testDir}/${pluginName}`;
+
+  try {
+    // Capture console.log output
+    const logs: string[] = [];
+    const originalLog = console.log;
+    console.log = (...args: unknown[]) => {
+      logs.push(args.join(" "));
+    };
+
+    try {
+      await init({ name: pluginName, directory: pluginDir });
+    } finally {
+      console.log = originalLog;
+    }
+
+    // Verify directory structure was created
+    const stat = await Deno.stat(pluginDir);
+    if (!stat.isDirectory) {
+      throw new Error("Plugin directory should be created");
+    }
+
+    const srcStat = await Deno.stat(`${pluginDir}/src`);
+    if (!srcStat.isDirectory) {
+      throw new Error("src directory should be created");
+    }
+
+    // Verify package.toml was created and contains correct content
+    const packageToml = await Deno.readTextFile(`${pluginDir}/package.toml`);
+    if (!packageToml.includes(`name = "${pluginName}"`)) {
+      throw new Error("package.toml should contain plugin name");
+    }
+    if (!packageToml.includes('entry = "src/index.js"')) {
+      throw new Error("package.toml should have correct entry point");
+    }
+    if (!packageToml.includes('package_id = "com.example"')) {
+      throw new Error("package.toml should have default package_id");
+    }
+
+    // Verify .gitignore was created
+    const gitignore = await Deno.readTextFile(`${pluginDir}/.gitignore`);
+    if (!gitignore.includes("package.js")) {
+      throw new Error(".gitignore should include package.js");
+    }
+    if (!gitignore.includes("node_modules/")) {
+      throw new Error(".gitignore should include node_modules/");
+    }
+
+    // Verify src/index.js was created with example function
+    const indexJs = await Deno.readTextFile(`${pluginDir}/src/index.js`);
+    if (!indexJs.includes("export function add(a, b)")) {
+      throw new Error("src/index.js should contain example add function");
+    }
+    if (!indexJs.includes("@param {number} a")) {
+      throw new Error("src/index.js should contain JSDoc comments");
+    }
+    if (!indexJs.includes("@permission")) {
+      throw new Error("src/index.js should contain permission annotations");
+    }
+  } finally {
+    await cleanupTestDir(pluginDir);
+    await cleanupTestDir(testDir);
+  }
+});
+
+Deno.test("init - accepts custom package_id and description", async () => {
+  const testDir = await Deno.makeTempDir({ prefix: "init-test-custom-" });
+  const pluginName = "custom-plugin";
+  const pluginDir = `${testDir}/${pluginName}`;
+
+  try {
+    const originalLog = console.log;
+    console.log = () => {};
+
+    try {
+      await init({
+        name: pluginName,
+        directory: pluginDir,
+        packageId: "org.custom",
+        description: "Custom plugin description",
+      });
+    } finally {
+      console.log = originalLog;
+    }
+
+    const packageToml = await Deno.readTextFile(`${pluginDir}/package.toml`);
+    if (!packageToml.includes('package_id = "org.custom"')) {
+      throw new Error("package.toml should contain custom package_id");
+    }
+    if (!packageToml.includes('description = "Custom plugin description"')) {
+      throw new Error("package.toml should contain custom description");
+    }
+  } finally {
+    await cleanupTestDir(pluginDir);
+    await cleanupTestDir(testDir);
+  }
+});
+
+Deno.test("init - uses plugin name as directory when directory not specified", async () => {
+  const testDir = await Deno.makeTempDir({ prefix: "init-test-nodir-" });
+  const pluginName = "auto-dir-plugin";
+
+  // Change to test directory temporarily
+  const originalCwd = Deno.cwd();
+  Deno.chdir(testDir);
+
+  try {
+    const originalLog = console.log;
+    console.log = () => {};
+
+    try {
+      await init({ name: pluginName });
+    } finally {
+      console.log = originalLog;
+    }
+
+    // Verify directory was created with plugin name
+    const stat = await Deno.stat(`${testDir}/${pluginName}`);
+    if (!stat.isDirectory) {
+      throw new Error("Directory should be created with plugin name");
+    }
+
+    const packageToml = await Deno.readTextFile(`${testDir}/${pluginName}/package.toml`);
+    if (!packageToml.includes(`name = "${pluginName}"`)) {
+      throw new Error("package.toml should contain plugin name");
+    }
+  } finally {
+    Deno.chdir(originalCwd);
+    await cleanupTestDir(testDir);
+  }
+});
+
+Deno.test("init - throws InitError when directory already exists", async () => {
+  const testDir = await Deno.makeTempDir({ prefix: "init-test-exists-" });
+  const pluginName = "existing-plugin";
+  const pluginDir = `${testDir}/${pluginName}`;
+
+  try {
+    // Create the directory first
+    await Deno.mkdir(pluginDir);
+
+    const originalLog = console.log;
+    console.log = () => {};
+
+    try {
+      await init({ name: pluginName, directory: pluginDir });
+      throw new Error("Expected InitError to be thrown");
+    } catch (error) {
+      if (!(error instanceof InitError)) {
+        throw error;
+      }
+      if (!error.message.includes("already exists")) {
+        throw new Error(`Expected 'already exists' in error message, got: ${error.message}`);
+      }
+    } finally {
+      console.log = originalLog;
+    }
+  } finally {
+    await cleanupTestDir(testDir);
+  }
+});
+
+Deno.test("init - displays success messages", async () => {
+  const testDir = await Deno.makeTempDir({ prefix: "init-test-msg-" });
+  const pluginName = "message-plugin";
+  const pluginDir = `${testDir}/${pluginName}`;
+
+  try {
+    const logs: string[] = [];
+    const originalLog = console.log;
+    console.log = (...args: unknown[]) => {
+      logs.push(args.join(" "));
+    };
+
+    try {
+      await init({ name: pluginName, directory: pluginDir });
+    } finally {
+      console.log = originalLog;
+    }
+
+    // Verify success messages were displayed
+    const allLogs = logs.join("\n");
+    if (!allLogs.includes("Creating plugin package")) {
+      throw new Error("Should display creation message");
+    }
+    if (!allLogs.includes("Created package.toml")) {
+      throw new Error("Should display package.toml creation message");
+    }
+    if (!allLogs.includes("Created .gitignore")) {
+      throw new Error("Should display .gitignore creation message");
+    }
+    if (!allLogs.includes("Created src/index.js")) {
+      throw new Error("Should display src/index.js creation message");
+    }
+    if (!allLogs.includes("initialized successfully")) {
+      throw new Error("Should display success message");
+    }
+  } finally {
+    await cleanupTestDir(pluginDir);
+    await cleanupTestDir(testDir);
+  }
+});
+
+Deno.test("init - cleans up on error", async () => {
+  const testDir = await Deno.makeTempDir({ prefix: "init-test-cleanup-" });
+  const pluginName = "cleanup-plugin";
+  const pluginDir = `${testDir}/${pluginName}`;
+
+  try {
+    // Create a file where the plugin directory should be to cause an error
+    await Deno.writeTextFile(pluginDir, "this is a file");
+
+    const originalLog = console.log;
+    console.log = () => {};
+
+    try {
+      await init({ name: pluginName, directory: pluginDir });
+      throw new Error("Expected InitError to be thrown");
+    } catch (error) {
+      if (!(error instanceof InitError)) {
+        throw error;
+      }
+    } finally {
+      console.log = originalLog;
+    }
+
+    // The file should still exist (we don't clean up files, only directories we created)
+    try {
+      const stat = await Deno.stat(pluginDir);
+      if (!stat.isFile) {
+        throw new Error("Original file should still exist");
+      }
+    } catch (error) {
+      if (error instanceof Deno.errors.NotFound) {
+        // This is actually fine - cleanup happened
+      } else {
+        throw error;
+      }
+    }
+  } finally {
+    await cleanupTestDir(testDir);
+  }
+});

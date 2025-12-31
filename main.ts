@@ -4,6 +4,7 @@ import { parseArgs } from "./src/utils/args.ts";
 import { VERSION } from "./src/version.ts";
 import { greet } from "./src/commands/greet.ts";
 import { build, BuildError } from "./src/commands/build.ts";
+import { init, InitError } from "./src/commands/init.ts";
 
 /**
  * Main CLI entry point
@@ -49,6 +50,40 @@ async function main() {
       }
       break;
     }
+    case "init": {
+      const name = typeof args.name === "string" && args.name.trim().length > 0
+        ? args.name
+        : args._[1]?.toString();
+
+      if (!name) {
+        console.error("Error: Plugin name is required");
+        console.error("Usage: sapphillon init <plugin-name> [OPTIONS]");
+        console.error("   or: sapphillon init --name <plugin-name> [OPTIONS]");
+        Deno.exit(1);
+      }
+
+      const directory = typeof args.directory === "string" && args.directory.trim().length > 0
+        ? args.directory
+        : undefined;
+      const packageId =
+        typeof args["package-id"] === "string" && args["package-id"].trim().length > 0
+          ? args["package-id"]
+          : undefined;
+      const description = typeof args.description === "string" && args.description.trim().length > 0
+        ? args.description
+        : undefined;
+
+      try {
+        await init({ name, directory, packageId, description });
+      } catch (error) {
+        if (error instanceof InitError) {
+          console.error(`Error: ${error.message}`);
+          Deno.exit(1);
+        }
+        throw error;
+      }
+      break;
+    }
     default:
       if (command) {
         console.error(`Unknown command: ${command}`);
@@ -68,17 +103,23 @@ USAGE:
   sapphillon [COMMAND] [OPTIONS]
 
 COMMANDS:
+  init        Initialize a new plugin package
   build       Build a plugin package
   greet       Greet someone
 
 OPTIONS:
-  -h, --help      Show this help message
-  -v, --version   Show version information
-  -n, --name      Name to use (for greet command)
-  -p, --project   Project directory (for build command, default: current directory)
-  -o, --output    Output directory (for build command, default: same as project)
+  -h, --help          Show this help message
+  -v, --version       Show version information
+  -n, --name          Name to use (for greet/init command)
+  -p, --project       Project directory (for build command, default: current directory)
+  -o, --output        Output directory (for build command, default: same as project)
+  -d, --directory     Target directory (for init command, default: plugin name)
+  --package-id        Package ID (for init command, default: com.example)
+  --description       Package description (for init command)
 
 EXAMPLES:
+  sapphillon init my-plugin
+  sapphillon init --name my-plugin --package-id com.mycompany
   sapphillon build
   sapphillon build --project ./my-plugin
   sapphillon greet
