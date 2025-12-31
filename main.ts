@@ -107,6 +107,8 @@ function printHelp() {
   console.log(`
 Sapphillon CLI v${VERSION}
 
+A command-line tool for creating and building Sapphillon plugin packages.
+
 USAGE:
   sapphillon [COMMAND] [OPTIONS]
 

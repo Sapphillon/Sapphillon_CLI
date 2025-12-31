@@ -1,6 +1,8 @@
 # Sapphillon_CLI
 
-A modern command-line tool built with Deno and TypeScript.
+A command-line tool for creating and building Sapphillon plugin packages.
+
+Sapphillon CLI helps developers scaffold new plugin projects and build them into the Sapphillon package format. It provides scaffolding for both JavaScript and TypeScript plugins, handles bundling, and generates the required metadata for Sapphillon plugins.
 
 ## Features
 
