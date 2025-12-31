@@ -334,3 +334,85 @@ Deno.test("init - creates JavaScript project by default", async () => {
     await cleanupTestDir(testDir);
   }
 });
+
+Deno.test("init - rejects directory traversal paths", async () => {
+  const originalLog = console.log;
+  console.log = () => {};
+
+  try {
+    await init({ name: "test", directory: "../evil-plugin" });
+    throw new Error("Expected InitError to be thrown for directory traversal");
+  } catch (error) {
+    if (!(error instanceof InitError)) {
+      throw error;
+    }
+    if (!error.message.includes("directory traversal")) {
+      throw new Error(`Expected 'directory traversal' in error message, got: ${error.message}`);
+    }
+  } finally {
+    console.log = originalLog;
+  }
+});
+
+Deno.test("init - handles file existing at target path", async () => {
+  const testDir = await Deno.makeTempDir({ prefix: "init-test-file-exists-" });
+  const pluginName = "file-exists-plugin";
+  const pluginPath = `${testDir}/${pluginName}`;
+
+  try {
+    // Create a file at the target path
+    await Deno.writeTextFile(pluginPath, "existing file");
+
+    const originalLog = console.log;
+    console.log = () => {};
+
+    try {
+      await init({ name: pluginName, directory: pluginPath });
+      throw new Error("Expected InitError to be thrown");
+    } catch (error) {
+      if (!(error instanceof InitError)) {
+        throw error;
+      }
+      if (!error.message.includes("not a directory")) {
+        throw new Error(`Expected 'not a directory' in error message, got: ${error.message}`);
+      }
+    } finally {
+      console.log = originalLog;
+    }
+  } finally {
+    await Deno.remove(testDir, { recursive: true });
+  }
+});
+
+Deno.test("init - escapes special characters in TOML values", async () => {
+  const testDir = await Deno.makeTempDir({ prefix: "init-test-escape-" });
+  const pluginName = "test-plugin";
+  const pluginDir = `${testDir}/${pluginName}`;
+
+  try {
+    const originalLog = console.log;
+    console.log = () => {};
+
+    try {
+      await init({
+        name: pluginName,
+        directory: pluginDir,
+        description: 'Test with "quotes" and \\ backslashes',
+        packageId: "com.test",
+      });
+    } finally {
+      console.log = originalLog;
+    }
+
+    const packageToml = await Deno.readTextFile(`${pluginDir}/package.toml`);
+    // Verify special characters are escaped
+    if (!packageToml.includes('\\"quotes\\"')) {
+      throw new Error("Quotes should be escaped in TOML");
+    }
+    if (!packageToml.includes("\\\\")) {
+      throw new Error("Backslashes should be escaped in TOML");
+    }
+  } finally {
+    await Deno.remove(testDir, { recursive: true });
+  }
+});

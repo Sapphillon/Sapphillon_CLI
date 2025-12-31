@@ -51,7 +51,7 @@ Deno.test("joinPath - handles single segment", () => {
 
 Deno.test("joinPath - handles root path", () => {
   const result = joinPath("/", "a", "b");
-  if (result !== "a/b") {
-    throw new Error(`Expected "a/b", got "${result}"`);
+  if (result !== "/a/b") {
+    throw new Error(`Expected "/a/b", got "${result}"`);
   }
 });

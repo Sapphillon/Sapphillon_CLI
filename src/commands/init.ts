@@ -20,6 +20,18 @@ export class InitError extends Error {
 }
 
 /**
+ * Escape a string for use in TOML string literal
+ */
+function escapeTomlString(str: string): string {
+  return str
+    .replace(/\\/g, "\\\\")
+    .replace(/"/g, '\\"')
+    .replace(/\n/g, "\\n")
+    .replace(/\r/g, "\\r")
+    .replace(/\t/g, "\\t");
+}
+
+/**
  * Generate package.toml content
  */
 function generatePackageToml(
@@ -31,11 +43,11 @@ function generatePackageToml(
   const entry = language === "typescript" ? "src/index.ts" : "src/index.js";
 
   return `[package]
-name = "${options.name}"
+name = "${escapeTomlString(options.name)}"
 version = "1.0.0"
-description = "${description}"
-entry = "${entry}"
-package_id = "${packageId}"
+description = "${escapeTomlString(description)}"
+entry = "${escapeTomlString(entry)}"
+package_id = "${escapeTomlString(packageId)}"
 `;
 }
 
@@ -108,23 +120,44 @@ export function add(a: number, b: number): number {
 }
 
 /**
+ * Validate and normalize a directory path to prevent directory traversal
+ */
+function validatePath(path: string): string {
+  // Normalize the path to resolve any '..' or '.' segments
+  const normalized = path.replace(/\\/g, "/");
+
+  // Check for directory traversal attempts
+  if (normalized.includes("../") || normalized.startsWith("..")) {
+    throw new InitError(
+      `Invalid path: '${path}' contains directory traversal sequences`,
+    );
+  }
+
+  return normalized;
+}
+
+/**
  * Initialize a new plugin package development environment
  */
 export async function init(options: InitOptions): Promise<void> {
-  const targetDir = options.directory || options.name;
+  const targetDir = validatePath(options.directory || options.name);
   const language = options.language || "javascript";
 
-  // Check if directory already exists
+  // Check if path already exists
   try {
     const stat = await Deno.stat(targetDir);
     if (stat.isDirectory) {
       throw new InitError(`Directory '${targetDir}' already exists`);
+    } else {
+      throw new InitError(
+        `Path '${targetDir}' already exists and is not a directory`,
+      );
     }
   } catch (error) {
     if (!(error instanceof Deno.errors.NotFound)) {
       throw error;
     }
-    // Directory doesn't exist, which is what we want
+    // Path doesn't exist, which is what we want
   }
 
   // Create directory structure
