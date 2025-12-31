@@ -130,7 +130,7 @@ OPTIONS:
 EXAMPLES:
   sapphillon init my-plugin
   sapphillon init --name my-plugin --language typescript
-  sapphillon init --name my-plugin --package-id com.mycompany --language ts
+  sapphillon init --name my-plugin --package-id com.mycompany --language typescript
   sapphillon build
   sapphillon build --project ./my-plugin
   sapphillon --version
