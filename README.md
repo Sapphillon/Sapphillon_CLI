@@ -45,7 +45,7 @@ After installation, you can run the CLI from anywhere:
 
 ```bash
 sapphillon --help
-sapphillon greet --name Alice
+sapphillon init my-plugin
 ```
 
 ### Usage
@@ -57,11 +57,18 @@ deno run --allow-read --allow-write --allow-net main.ts --help
 # Show version
 deno run --allow-read --allow-write --allow-net main.ts --version
 
-# Run greet command
-deno run --allow-read --allow-write --allow-net main.ts greet --name Alice
+# Initialize a new plugin
+deno run --allow-read --allow-write --allow-net main.ts init my-plugin
+
+# Initialize a TypeScript plugin
+deno run --allow-read --allow-write --allow-net main.ts init --name my-plugin --language typescript
+
+# Build a plugin
+deno run --allow-read --allow-write --allow-net main.ts build
 
 # Or use Make
-make run ARGS="greet --name Alice"
+make run ARGS="init my-plugin"
+make run ARGS="build --project ./my-plugin"
 ```
 
 ## Development

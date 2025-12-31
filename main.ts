@@ -2,7 +2,6 @@
 
 import { parseArgs } from "./src/utils/args.ts";
 import { VERSION } from "./src/version.ts";
-import { greet } from "./src/commands/greet.ts";
 import { build, BuildError } from "./src/commands/build.ts";
 import { init, InitError } from "./src/commands/init.ts";
 
@@ -25,13 +24,6 @@ async function main() {
   const command = args._[0]?.toString();
 
   switch (command) {
-    case "greet": {
-      const name = typeof args.name === "string" && args.name.trim().length > 0
-        ? args.name
-        : "World";
-      greet(name);
-      break;
-    }
     case "build": {
       const projectDir = typeof args.project === "string" && args.project.trim().length > 0
         ? args.project
@@ -121,12 +113,11 @@ USAGE:
 COMMANDS:
   init        Initialize a new plugin package
   build       Build a plugin package
-  greet       Greet someone
 
 OPTIONS:
   -h, --help          Show this help message
   -v, --version       Show version information
-  -n, --name          Name to use (for greet/init command)
+  -n, --name          Name to use (for init command)
   -p, --project       Project directory (for build command, default: current directory)
   -o, --output        Output directory (for build command, default: same as project)
   -d, --directory     Target directory (for init command, default: plugin name)
@@ -140,8 +131,6 @@ EXAMPLES:
   sapphillon init --name my-plugin --package-id com.mycompany --language ts
   sapphillon build
   sapphillon build --project ./my-plugin
-  sapphillon greet
-  sapphillon greet --name Alice
   sapphillon --version
 `);
 }
