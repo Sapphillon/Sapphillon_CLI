@@ -20,6 +20,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: release
+  cancel-in-progress: false
+
 jobs:
   release:
     name: Create Release
@@ -29,7 +33,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: Setup Deno
         uses: denoland/setup-deno@v1
@@ -81,6 +85,15 @@ jobs:
           echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
           echo "New version: $NEW_VERSION"
 
+      - name: Run tests
+        run: deno task test
+
+      - name: Check formatting
+        run: deno task fmt:check
+
+      - name: Run linter
+        run: deno task lint
+
       - name: Update version in files
         env:
           NEW_VERSION: ${{ steps.calc_version.outputs.new_version }}
@@ -105,36 +118,29 @@ jobs:
           
           echo "Updated version to $NEW_VERSION"
 
-      - name: Run tests
-        run: deno task test
-
-      - name: Check formatting
-        run: deno task fmt:check
-
-      - name: Run linter
-        run: deno task lint
-
       - name: Commit version bump
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add deno.json src/version.ts
           git commit -m "chore: bump version to ${{ steps.calc_version.outputs.new_version }}"
-          git push
 
       - name: Create Git tag
         run: |
           TAG="v${{ steps.calc_version.outputs.new_version }}"
           git tag -a "$TAG" -m "Release $TAG"
-          git push origin "$TAG"
+
+      - name: Push changes and tag
+        run: |
+          git push
+          git push origin "v${{ steps.calc_version.outputs.new_version }}"
 
       - name: Create GitHub Release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v2
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           tag_name: v${{ steps.calc_version.outputs.new_version }}
-          release_name: Release v${{ steps.calc_version.outputs.new_version }}
+          name: Release v${{ steps.calc_version.outputs.new_version }}
           body: |
             ## Sapphillon CLI v${{ steps.calc_version.outputs.new_version }}
             
@@ -143,7 +149,7 @@ jobs:
             Install the latest version using Deno:
             
             ```bash
-            deno install --allow-read --allow-write --allow-net --allow-run --allow-env -n sapphillon https://raw.githubusercontent.com/Sapphillon/Sapphillon_CLI/v${{ steps.calc_version.outputs.new_version }}/main.ts
+            deno install --allow-read --allow-write --allow-net --allow-run --allow-env -n sapphillon https://raw.githubusercontent.com/Sapphillon/Sapphillon_CLI/refs/tags/v${{ steps.calc_version.outputs.new_version }}/main.ts
             ```
             
             Or install from the main branch (latest):
