@@ -4,7 +4,7 @@ import type { WeatherInfo } from "./api.ts";
 
 /**
  * WeatherInfoオブジェクトを整形された文字列に変換します。
- * @param {import("./api.ts").WeatherInfo} data
+ * @param {WeatherInfo} data
  * @returns {string}
  */
 export function formatWeather(data: WeatherInfo): string {
