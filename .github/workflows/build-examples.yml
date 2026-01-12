@@ -1,0 +1,41 @@
+name: Build Examples
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'src/**'
+      - 'main.ts'
+      - 'deno.json'
+      - '.github/workflows/build-examples.yml'
+      - 'examples/**'
+
+jobs:
+  build:
+    name: Build and Commit Example Artifacts
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, 'build: Build example plugins')"
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.x
+
+      - name: Build JavaScript example
+        run: deno run --allow-read --allow-write --allow-net main.ts build --project ./examples/javascript-plugin
+
+      - name: Build TypeScript example
+        run: deno run --allow-read --allow-write --allow-net main.ts build --project ./examples/typescript-plugin
+
+      - name: Commit and push changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "build: Build example plugins"
+          file_pattern: "examples/**/package.js"
