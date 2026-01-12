@@ -1,0 +1,6 @@
+[package]
+name = "TypeScript Example"
+version = "1.0.0"
+description = "A simple TypeScript-based plugin example."
+entry = "src/index.ts"
+package_id = "com.example.typescript"
