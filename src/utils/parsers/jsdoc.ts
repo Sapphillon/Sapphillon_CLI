@@ -39,14 +39,14 @@ export function parseJavaScript(content: string): FunctionInfo[] {
   // Handles both JavaScript and TypeScript syntax (with optional type annotations)
   // The \s* after */ allows for optional whitespace including newlines
   const jsdocFunctionRegex =
-    /\/\*\*\s*([\s\S]*?)\s*\*\/\s*export\s+function\s+(\w+)\s*\(([^)]*)\)(?:\s*:\s*[^{]+)?\s*\{([\s\S]*?)\n\}/g;
+    /\/\*\*\s*([\s\S]*?)\s*\*\/\s*export\s+(async\s+)?function\s+(\w+)\s*\(([^)]*)\)(?:\s*:\s*[^{]+)?\s*\{([\s\S]*?)\n\}/g;
 
   let match;
   while ((match = jsdocFunctionRegex.exec(content)) !== null) {
     const jsdocContent = match[1];
-    const functionName = match[2];
-    const params = match[3];
-    const body = match[4];
+    const functionName = match[3];
+    const params = match[4];
+    const body = match[5];
 
     const functionInfo = parseJsDoc(jsdocContent, functionName, params, body);
     functions.push(functionInfo);
