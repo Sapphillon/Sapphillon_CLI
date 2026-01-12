@@ -1,11 +1,13 @@
 // examples/weather-forecast-plugin/src/formatter.ts
 
+import type { WeatherInfo } from "./api.ts";
+
 /**
  * WeatherInfoオブジェクトを整形された文字列に変換します。
- * @param {import("./api.ts").WeatherInfo} data
+ * @param {WeatherInfo} data
  * @returns {string}
  */
-export function formatWeather(data: import("./api.ts").WeatherInfo): string {
+export function formatWeather(data: WeatherInfo): string {
   const today = data.forecasts.find((f) => f.dateLabel === "今日");
   const tomorrow = data.forecasts.find((f) => f.dateLabel === "明日");
 
