@@ -133,3 +133,39 @@ export function add(a, b) {
     throw new Error(`Expected Japanese param description, got '${fn.parameters[0].description}'`);
   }
 });
+
+Deno.test("parseJavaScript - parses async exported function", () => {
+  const content = `
+/**
+ * Fetches data asynchronously.
+ * @param {string} id - The resource ID
+ * @returns {Promise<object>} The fetched data
+ */
+export async function fetchData(id) {
+  return {};
+}
+`;
+  const functions = parseJavaScript(content);
+  if (functions.length !== 1) {
+    throw new Error(`Expected 1 function, got ${functions.length}`);
+  }
+  const fn = functions[0];
+  if (fn.name !== "fetchData") {
+    throw new Error(`Expected function name 'fetchData', got '${fn.name}'`);
+  }
+  if (fn.description !== "Fetches data asynchronously.") {
+    throw new Error(`Expected description 'Fetches data asynchronously.', got '${fn.description}'`);
+  }
+  if (fn.parameters.length !== 1) {
+    throw new Error(`Expected 1 parameter, got ${fn.parameters.length}`);
+  }
+  if (fn.parameters[0].name !== "id") {
+    throw new Error(`Expected param name 'id', got '${fn.parameters[0].name}'`);
+  }
+  if (fn.returns.length !== 1) {
+    throw new Error(`Expected 1 return, got ${fn.returns.length}`);
+  }
+  if (fn.returns[0].type !== "Promise<object>") {
+    throw new Error(`Expected return type 'Promise<object>', got '${fn.returns[0].type}'`);
+  }
+});
