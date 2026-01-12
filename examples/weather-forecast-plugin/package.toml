@@ -1,0 +1,6 @@
+[package]
+name = "Weather Forecast Plugin"
+version = "1.0.0"
+description = "A plugin to get the weather forecast."
+entry = "src/index.ts"
+package_id = "com.example.weatherforecast"
