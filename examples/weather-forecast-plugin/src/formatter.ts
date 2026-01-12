@@ -1,6 +1,5 @@
 // examples/weather-forecast-plugin/src/formatter.ts
 
-
 /**
  * WeatherInfoオブジェクトを整形された文字列に変換します。
  * @param {import("./api.ts").WeatherInfo} data
