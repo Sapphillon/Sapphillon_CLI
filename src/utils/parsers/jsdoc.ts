@@ -37,7 +37,16 @@ export function parseJavaScript(content: string): FunctionInfo[] {
 
   // Match JSDoc comment followed by export function
   // Handles both JavaScript and TypeScript syntax (with optional type annotations)
-  // Use negative lookahead to ensure we don't match content spanning multiple JSDoc blocks
+  // Regex breakdown:
+  //   \/\*\*                     - Match JSDoc start /**
+  //   ((?:(?!\*\/)[\s\S])*?)     - Capture content, but stop at first */ (negative lookahead)
+  //   \*\/                       - Match JSDoc end */
+  //   \s*export\s+               - Match 'export' keyword with optional whitespace
+  //   (async\s+)?                - Optional 'async' keyword
+  //   function\s+(\w+)           - Match 'function' and capture name
+  //   \(([^)]*)\)                - Capture parameters
+  //   (?:\s*:\s*[^{]+)?          - Optional TypeScript return type annotation
+  //   \s*\{([\s\S]*?)\n\}        - Capture function body
   const jsdocFunctionRegex =
     /\/\*\*((?:(?!\*\/)[\s\S])*?)\*\/\s*export\s+(async\s+)?function\s+(\w+)\s*\(([^)]*)\)(?:\s*:\s*[^{]+)?\s*\{([\s\S]*?)\n\}/g;
 
