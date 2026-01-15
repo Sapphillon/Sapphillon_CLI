@@ -1,0 +1,6 @@
+[package]
+name = "Text Utils Plugin"
+version = "1.0.0"
+description = "A plugin for text manipulation using lodash library."
+entry = "src/index.js"
+author_id = "app.sapphillon"

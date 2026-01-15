@@ -90,7 +90,9 @@ export function parsePackageToml(content: string): PackageToml {
   const authorId = pkg.author_id || "";
 
   // Auto-generate package_id from author_id.name
-  const packageId = authorId ? `${authorId}.${toPackageIdComponent(name)}` : toPackageIdComponent(name);
+  const packageId = authorId
+    ? `${authorId}.${toPackageIdComponent(name)}`
+    : toPackageIdComponent(name);
 
   return {
     package: {

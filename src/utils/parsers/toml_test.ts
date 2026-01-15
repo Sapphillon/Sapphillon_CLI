@@ -82,7 +82,9 @@ author_id = "app.sapphillon"
   }
   // package_id is auto-generated from author_id.name
   if (result.package.package_id !== "app.sapphillon.my-awesome-plugin") {
-    throw new Error(`Expected package_id to be 'app.sapphillon.my-awesome-plugin', got '${result.package.package_id}'`);
+    throw new Error(
+      `Expected package_id to be 'app.sapphillon.my-awesome-plugin', got '${result.package.package_id}'`,
+    );
   }
 });
 

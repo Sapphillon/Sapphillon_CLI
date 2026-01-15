@@ -68,6 +68,9 @@ build-examples:
 	@echo "Building Date Formatter plugin (with npm dependencies)..."
 	@deno run --allow-read --allow-write --allow-net --allow-run --allow-env main.ts build --project ./examples/date-formatter-plugin
 	@echo ""
+	@echo "Building Text Utils plugin (multi-file JS with npm dependencies)..."
+	@deno run --allow-read --allow-write --allow-net --allow-run --allow-env main.ts build --project ./examples/text-utils-plugin
+	@echo ""
 	@echo "All examples built successfully!"
 
 # Run tests

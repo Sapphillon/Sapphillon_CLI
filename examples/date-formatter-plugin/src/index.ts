@@ -13,8 +13,8 @@ import { ja } from "npm:date-fns@4.1.0/locale";
  * @returns {string} 整形された日付文字列
  */
 export function formatDate(dateString: string, formatPattern: string): string {
-    const date = parseISO(dateString);
-    return format(date, formatPattern, { locale: ja });
+  const date = parseISO(dateString);
+  return format(date, formatPattern, { locale: ja });
 }
 
 /**
@@ -23,8 +23,8 @@ export function formatDate(dateString: string, formatPattern: string): string {
  * @returns {string} 相対的な時間 (例: "3日前")
  */
 export function getRelativeTime(dateString: string): string {
-    const date = parseISO(dateString);
-    return formatDistance(date, new Date(), { addSuffix: true, locale: ja });
+  const date = parseISO(dateString);
+  return formatDistance(date, new Date(), { addSuffix: true, locale: ja });
 }
 
 /**
@@ -32,5 +32,5 @@ export function getRelativeTime(dateString: string): string {
  * @returns {string} 現在の日時 (例: "2024年1月15日 19時30分")
  */
 export function getCurrentDateTime(): string {
-    return format(new Date(), "yyyy年MM月dd日 HH時mm分", { locale: ja });
+  return format(new Date(), "yyyy年MM月dd日 HH時mm分", { locale: ja });
 }
