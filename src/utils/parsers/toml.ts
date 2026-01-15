@@ -8,8 +8,20 @@ export interface PackageToml {
     version: string;
     description: string;
     entry: string;
-    package_id: string;
+    author_id: string;
+    package_id: string; // Auto-generated: author_id.name
   };
+}
+
+/**
+ * Convert a name string to a valid package ID component
+ * Converts to lowercase and replaces spaces/special chars with hyphens
+ */
+function toPackageIdComponent(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, ""); // Remove leading/trailing hyphens
 }
 
 /**
@@ -64,6 +76,7 @@ export function parseToml(content: string): Record<string, unknown> {
 
 /**
  * Parse a package.toml content and return typed PackageToml
+ * package_id is auto-generated from author_id.name
  */
 export function parsePackageToml(content: string): PackageToml {
   const parsed = parseToml(content);
@@ -73,13 +86,20 @@ export function parsePackageToml(content: string): PackageToml {
     throw new Error("Missing [package] section in package.toml");
   }
 
+  const name = pkg.name || "";
+  const authorId = pkg.author_id || "";
+
+  // Auto-generate package_id from author_id.name
+  const packageId = authorId ? `${authorId}.${toPackageIdComponent(name)}` : toPackageIdComponent(name);
+
   return {
     package: {
-      name: pkg.name || "",
+      name,
       version: pkg.version || "",
       description: pkg.description || "",
       entry: pkg.entry || "src/index.js",
-      package_id: pkg.package_id || "",
+      author_id: authorId,
+      package_id: packageId,
     },
   };
 }

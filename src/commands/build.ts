@@ -50,16 +50,14 @@ function generateFunctionsObject(functions: FunctionInfo[]): string {
     // Handle empty arrays with cleaner formatting
     const parametersContent = fn.parameters.length > 0
       ? fn.parameters.map((p) =>
-        `{ name: "${escapeJsString(p.name)}", idx: ${p.idx}, type: "${
-          escapeJsString(p.type)
+        `{ name: "${escapeJsString(p.name)}", idx: ${p.idx}, type: "${escapeJsString(p.type)
         }", description: "${escapeJsString(p.description)}" }`
       ).join(",\n        ")
       : "";
 
     const returnsContent = fn.returns.length > 0
       ? fn.returns.map((r) =>
-        `{ type: "${escapeJsString(r.type)}", idx: ${r.idx}, description: "${
-          escapeJsString(r.description)
+        `{ type: "${escapeJsString(r.type)}", idx: ${r.idx}, description: "${escapeJsString(r.description)
         }" }`
       ).join(",\n        ")
       : "";
@@ -164,6 +162,7 @@ Sapphillon.Package = {
     name: "${escapeJsString(packageToml.package.name)}",
     version: "${escapeJsString(packageToml.package.version)}",
     description: "${escapeJsString(packageToml.package.description)}",
+    author_id: "${escapeJsString(packageToml.package.author_id)}",
     package_id: "${escapeJsString(packageToml.package.package_id)}"
   },
   functions: {

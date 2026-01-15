@@ -64,12 +64,13 @@ Sapphillon.Package = {
     name: "Weather Forecast Plugin",
     version: "1.0.0",
     description: "A plugin to get the weather forecast.",
-    package_id: "com.example.weatherforecast"
+    author_id: "app.sapphillon",
+    package_id: "app.sapphillon.weather-forecast-plugin"
   },
   functions: {
     getWeatherForecast: {
       handler: getWeatherForecast,
-      permissions: [{type: "Net", resource: "weather.tsukumijima.net"}],
+      permissions: [{ type: "Net", resource: "weather.tsukumijima.net" }],
       description: "指定された都市の天気予報を取得します。",
       parameters: [
         { name: "cityId", idx: 0, type: "string", description: "天気予報を取得する都市のID" }

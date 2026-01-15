@@ -14,7 +14,8 @@ Sapphillon.Package = {
     name: "JavaScript Example",
     version: "1.0.0",
     description: "A simple JavaScript-based plugin example.",
-    package_id: "com.example.javascript"
+    author_id: "app.sapphillon",
+    package_id: "app.sapphillon.javascript-example"
   },
   functions: {
     add: {

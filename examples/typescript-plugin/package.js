@@ -14,12 +14,13 @@ Sapphillon.Package = {
     name: "TypeScript Example",
     version: "1.0.0",
     description: "A simple TypeScript-based plugin example.",
-    package_id: "com.example.typescript"
+    author_id: "app.sapphillon",
+    package_id: "app.sapphillon.typescript-example"
   },
   functions: {
     add: {
       handler: add,
-      permissions: [{type: "FileSystemRead", resource: "/etc"}, {type: "FileSystemWrite", resource: "/etc"}],
+      permissions: [{ type: "FileSystemRead", resource: "/etc" }, { type: "FileSystemWrite", resource: "/etc" }],
       description: "2つの数値を加算します。",
       parameters: [
         { name: "a", idx: 0, type: "number", description: "足される数" },
