@@ -65,6 +65,9 @@ build-examples:
 	@echo "Building Weather Forecast plugin..."
 	@deno run --allow-read --allow-write --allow-net --allow-run --allow-env main.ts build --project ./examples/weather-forecast-plugin
 	@echo ""
+	@echo "Building Date Formatter plugin (with npm dependencies)..."
+	@deno run --allow-read --allow-write --allow-net --allow-run --allow-env main.ts build --project ./examples/date-formatter-plugin
+	@echo ""
 	@echo "All examples built successfully!"
 
 # Run tests

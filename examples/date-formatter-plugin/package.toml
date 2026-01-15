@@ -1,0 +1,6 @@
+[package]
+name = "Date Formatter Plugin"
+version = "1.0.0"
+description = "A plugin that formats dates using date-fns library."
+entry = "src/index.ts"
+author_id = "app.sapphillon"

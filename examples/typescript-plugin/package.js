@@ -1,13 +1,7 @@
-/**
- * 2つの数値を加算します。
- * @param {number} a - 足される数
- * @param {number} b - 足す数
- * @returns {number} 合計
- * @permission ["FileSystemRead:/etc", "FileSystemWrite:/etc"]
- */
-function add(a, b) {
-  return a + b;
-}
+// examples/typescript-plugin/src/index.ts
+  function add(a, b) {
+    return a + b;
+  }
 
 Sapphillon.Package = {
   meta: {
