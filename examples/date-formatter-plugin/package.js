@@ -2131,7 +2131,7 @@ Sapphillon.Package = {
     formatDate: {
       handler: formatDate,
       permissions: [],
-      description: "Date Formatter Plugin",
+      description: "日付を指定されたフォーマットで整形します。",
       parameters: [
         { name: "dateString", idx: 0, type: "string", description: "ISO 8601形式の日付文字列" },
         { name: "formatPattern", idx: 1, type: "string", description: "フォーマットパターン (例: \"yyyy年MM月dd日\")" }
