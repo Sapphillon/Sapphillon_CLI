@@ -43,6 +43,7 @@ export async function bundle(options: BundleOptions): Promise<BundleResult> {
       sourcemap: false,
       treeShaking: true,
       charset: "utf8", // Preserve non-ASCII characters (Japanese, etc.)
+      legalComments: "none", // Remove all comments
       plugins: [...denoPlugins()],
       // Don't wrap in global name since we'll append Sapphillon.Package
       globalName: undefined,
@@ -75,36 +76,35 @@ export async function bundle(options: BundleOptions): Promise<BundleResult> {
 }
 
 /**
- * Unwrap IIFE to expose functions in global scope
+ * Unwrap IIFE to expose functions in global scope and remove comments
  * Converts: (() => { function foo() {} })();
  * To: function foo() {}
  */
 function unwrapIIFE(code: string): string {
+  let inner = code;
+
   // Check if it's an IIFE: (() => { ... })();
   const iifeMatch = code.match(/^\s*\(\(\)\s*=>\s*\{([\s\S]*)\}\)\(\);\s*$/);
   if (iifeMatch) {
-    let inner = iifeMatch[1].trim();
-
-    // Remove "use strict" if present
-    inner = inner.replace(/^"use strict";\s*/m, "");
-
-    // Handle var declarations at the start (esbuild artifact)
-    // Convert: var funcName = ...; to proper function declarations
-    // This is complex, so we'll just clean up the output
-
-    return inner;
+    inner = iifeMatch[1].trim();
+  } else {
+    // Also handle: (function() { ... })();
+    const iifeFuncMatch = code.match(/^\s*\(function\s*\(\)\s*\{([\s\S]*)\}\)\(\);\s*$/);
+    if (iifeFuncMatch) {
+      inner = iifeFuncMatch[1].trim();
+    }
   }
 
-  // Also handle: (function() { ... })();
-  const iifeFuncMatch = code.match(/^\s*\(function\s*\(\)\s*\{([\s\S]*)\}\)\(\);\s*$/);
-  if (iifeFuncMatch) {
-    let inner = iifeFuncMatch[1].trim();
-    inner = inner.replace(/^"use strict";\s*/m, "");
-    return inner;
-  }
+  // Remove "use strict" if present
+  inner = inner.replace(/^"use strict";\s*/m, "");
 
-  // If not IIFE wrapped, return as-is
-  return code;
+  // Remove single-line comments (esbuild path comments like "// path/to/file.js")
+  inner = inner.replace(/^\s*\/\/[^\n]*\n/gm, "");
+
+  // Remove empty lines left over
+  inner = inner.replace(/\n\s*\n\s*\n/g, "\n\n");
+
+  return inner.trim();
 }
 
 /**

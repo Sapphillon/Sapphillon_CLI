@@ -1,5 +1,4 @@
-// ../../../Library/Caches/deno/deno_esbuild/registry.npmjs.org/date-fns@4.1.0/node_modules/date-fns/constants.js
-  var daysInYear = 365.2425;
+var daysInYear = 365.2425;
   var maxTime = Math.pow(10, 8) * 24 * 60 * 60 * 1e3;
   var minTime = -maxTime;
   var millisecondsInWeek = 6048e5;
@@ -15,8 +14,6 @@
   var secondsInMonth = secondsInYear / 12;
   var secondsInQuarter = secondsInMonth * 3;
   var constructFromSymbol = Symbol.for("constructDateFrom");
-
-  // ../../../Library/Caches/deno/deno_esbuild/registry.npmjs.org/date-fns@4.1.0/node_modules/date-fns/constructFrom.js
   function constructFrom(date, value) {
     if (typeof date === "function") return date(value);
     if (date && typeof date === "object" && constructFromSymbol in date)
@@ -24,19 +21,13 @@
     if (date instanceof Date) return new date.constructor(value);
     return new Date(value);
   }
-
-  // ../../../Library/Caches/deno/deno_esbuild/registry.npmjs.org/date-fns@4.1.0/node_modules/date-fns/toDate.js
   function toDate(argument, context) {
     return constructFrom(context || argument, argument);
   }
-
-  // ../../../Library/Caches/deno/deno_esbuild/registry.npmjs.org/date-fns@4.1.0/node_modules/date-fns/_lib/defaultOptions.js
   var defaultOptions = {};
   function getDefaultOptions() {
     return defaultOptions;
   }
-
-  // ../../../Library/Caches/deno/deno_esbuild/registry.npmjs.org/date-fns@4.1.0/node_modules/date-fns/startOfWeek.js
   function startOfWeek(date, options) {
     const defaultOptions2 = getDefaultOptions();
     const weekStartsOn = options?.weekStartsOn ?? options?.locale?.options?.weekStartsOn ?? defaultOptions2.weekStartsOn ?? defaultOptions2.locale?.options?.weekStartsOn ?? 0;
@@ -47,13 +38,9 @@
     _date.setHours(0, 0, 0, 0);
     return _date;
   }
-
-  // ../../../Library/Caches/deno/deno_esbuild/registry.npmjs.org/date-fns@4.1.0/node_modules/date-fns/startOfISOWeek.js
   function startOfISOWeek(date, options) {
     return startOfWeek(date, { ...options, weekStartsOn: 1 });
   }
-
-  // ../../../Library/Caches/deno/deno_esbuild/registry.npmjs.org/date-fns@4.1.0/node_modules/date-fns/getISOWeekYear.js
   function getISOWeekYear(date, options) {
     const _date = toDate(date, options?.in);
     const year = _date.getFullYear();
@@ -73,8 +60,6 @@
       return year - 1;
     }
   }
-
-  // ../../../Library/Caches/deno/deno_esbuild/registry.npmjs.org/date-fns@4.1.0/node_modules/date-fns/_lib/getTimezoneOffsetInMilliseconds.js
   function getTimezoneOffsetInMilliseconds(date) {
     const _date = toDate(date);
     const utcDate = new Date(
@@ -91,8 +76,6 @@
     utcDate.setUTCFullYear(_date.getFullYear());
     return +date - +utcDate;
   }
-
-  // ../../../Library/Caches/deno/deno_esbuild/registry.npmjs.org/date-fns@4.1.0/node_modules/date-fns/_lib/normalizeDates.js
   function normalizeDates(context, ...dates) {
     const normalize = constructFrom.bind(
       null,
@@ -100,15 +83,11 @@
     );
     return dates.map(normalize);
   }
-
-  // ../../../Library/Caches/deno/deno_esbuild/registry.npmjs.org/date-fns@4.1.0/node_modules/date-fns/startOfDay.js
   function startOfDay(date, options) {
     const _date = toDate(date, options?.in);
     _date.setHours(0, 0, 0, 0);
     return _date;
   }
-
-  // ../../../Library/Caches/deno/deno_esbuild/registry.npmjs.org/date-fns@4.1.0/node_modules/date-fns/differenceInCalendarDays.js
   function differenceInCalendarDays(laterDate, earlierDate, options) {
     const [laterDate_, earlierDate_] = normalizeDates(
       options?.in,
@@ -121,8 +100,6 @@
     const earlierTimestamp = +earlierStartOfDay - getTimezoneOffsetInMilliseconds(earlierStartOfDay);
     return Math.round((laterTimestamp - earlierTimestamp) / millisecondsInDay);
   }
-
-  // ../../../Library/Caches/deno/deno_esbuild/registry.npmjs.org/date-fns@4.1.0/node_modules/date-fns/startOfISOWeekYear.js
   function startOfISOWeekYear(date, options) {
     const year = getISOWeekYear(date, options);
     const fourthOfJanuary = constructFrom(options?.in || date, 0);
@@ -130,26 +107,18 @@
     fourthOfJanuary.setHours(0, 0, 0, 0);
     return startOfISOWeek(fourthOfJanuary);
   }
-
-  // ../../../Library/Caches/deno/deno_esbuild/registry.npmjs.org/date-fns@4.1.0/node_modules/date-fns/compareAsc.js
   function compareAsc(dateLeft, dateRight) {
     const diff = +toDate(dateLeft) - +toDate(dateRight);
     if (diff < 0) return -1;
     else if (diff > 0) return 1;
     return diff;
   }
-
-  // ../../../Library/Caches/deno/deno_esbuild/registry.npmjs.org/date-fns@4.1.0/node_modules/date-fns/isDate.js
   function isDate(value) {
     return value instanceof Date || typeof value === "object" && Object.prototype.toString.call(value) === "[object Date]";
   }
-
-  // ../../../Library/Caches/deno/deno_esbuild/registry.npmjs.org/date-fns@4.1.0/node_modules/date-fns/isValid.js
   function isValid(date) {
     return !(!isDate(date) && typeof date !== "number" || isNaN(+toDate(date)));
   }
-
-  // ../../../Library/Caches/deno/deno_esbuild/registry.npmjs.org/date-fns@4.1.0/node_modules/date-fns/differenceInCalendarMonths.js
   function differenceInCalendarMonths(laterDate, earlierDate, options) {
     const [laterDate_, earlierDate_] = normalizeDates(
       options?.in,
@@ -160,8 +129,6 @@
     const monthsDiff = laterDate_.getMonth() - earlierDate_.getMonth();
     return yearsDiff * 12 + monthsDiff;
   }
-
-  // ../../../Library/Caches/deno/deno_esbuild/registry.npmjs.org/date-fns@4.1.0/node_modules/date-fns/_lib/getRoundingMethod.js
   function getRoundingMethod(method) {
     return (number) => {
       const round = method ? Math[method] : Math.trunc;
@@ -169,20 +136,14 @@
       return result === 0 ? 0 : result;
     };
   }
-
-  // ../../../Library/Caches/deno/deno_esbuild/registry.npmjs.org/date-fns@4.1.0/node_modules/date-fns/differenceInMilliseconds.js
   function differenceInMilliseconds(laterDate, earlierDate) {
     return +toDate(laterDate) - +toDate(earlierDate);
   }
-
-  // ../../../Library/Caches/deno/deno_esbuild/registry.npmjs.org/date-fns@4.1.0/node_modules/date-fns/endOfDay.js
   function endOfDay(date, options) {
     const _date = toDate(date, options?.in);
     _date.setHours(23, 59, 59, 999);
     return _date;
   }
-
-  // ../../../Library/Caches/deno/deno_esbuild/registry.npmjs.org/date-fns@4.1.0/node_modules/date-fns/endOfMonth.js
   function endOfMonth(date, options) {
     const _date = toDate(date, options?.in);
     const month = _date.getMonth();
@@ -190,14 +151,10 @@
     _date.setHours(23, 59, 59, 999);
     return _date;
   }
-
-  // ../../../Library/Caches/deno/deno_esbuild/registry.npmjs.org/date-fns@4.1.0/node_modules/date-fns/isLastDayOfMonth.js
   function isLastDayOfMonth(date, options) {
     const _date = toDate(date, options?.in);
     return +endOfDay(_date, options) === +endOfMonth(_date, options);
   }
-
-  // ../../../Library/Caches/deno/deno_esbuild/registry.npmjs.org/date-fns@4.1.0/node_modules/date-fns/differenceInMonths.js
   function differenceInMonths(laterDate, earlierDate, options) {
     const [laterDate_, workingLaterDate, earlierDate_] = normalizeDates(
       options?.in,
@@ -220,22 +177,16 @@
     const result = sign * (difference - +isLastMonthNotFull);
     return result === 0 ? 0 : result;
   }
-
-  // ../../../Library/Caches/deno/deno_esbuild/registry.npmjs.org/date-fns@4.1.0/node_modules/date-fns/differenceInSeconds.js
   function differenceInSeconds(laterDate, earlierDate, options) {
     const diff = differenceInMilliseconds(laterDate, earlierDate) / 1e3;
     return getRoundingMethod(options?.roundingMethod)(diff);
   }
-
-  // ../../../Library/Caches/deno/deno_esbuild/registry.npmjs.org/date-fns@4.1.0/node_modules/date-fns/startOfYear.js
   function startOfYear(date, options) {
     const date_ = toDate(date, options?.in);
     date_.setFullYear(date_.getFullYear(), 0, 1);
     date_.setHours(0, 0, 0, 0);
     return date_;
   }
-
-  // ../../../Library/Caches/deno/deno_esbuild/registry.npmjs.org/date-fns@4.1.0/node_modules/date-fns/locale/en-US/_lib/formatDistance.js
   var formatDistanceLocale = {
     lessThanXSeconds: {
       one: "less than a second",
@@ -318,8 +269,6 @@
     }
     return result;
   };
-
-  // ../../../Library/Caches/deno/deno_esbuild/registry.npmjs.org/date-fns@4.1.0/node_modules/date-fns/locale/_lib/buildFormatLongFn.js
   function buildFormatLongFn(args) {
     return (options = {}) => {
       const width = options.width ? String(options.width) : args.defaultWidth;
@@ -327,8 +276,6 @@
       return format2;
     };
   }
-
-  // ../../../Library/Caches/deno/deno_esbuild/registry.npmjs.org/date-fns@4.1.0/node_modules/date-fns/locale/en-US/_lib/formatLong.js
   var dateFormats = {
     full: "EEEE, MMMM do, y",
     long: "MMMM do, y",
@@ -361,8 +308,6 @@
       defaultWidth: "full"
     })
   };
-
-  // ../../../Library/Caches/deno/deno_esbuild/registry.npmjs.org/date-fns@4.1.0/node_modules/date-fns/locale/en-US/_lib/formatRelative.js
   var formatRelativeLocale = {
     lastWeek: "'last' eeee 'at' p",
     yesterday: "'yesterday at' p",
@@ -372,8 +317,6 @@
     other: "P"
   };
   var formatRelative = (token, _date, _baseDate, _options) => formatRelativeLocale[token];
-
-  // ../../../Library/Caches/deno/deno_esbuild/registry.npmjs.org/date-fns@4.1.0/node_modules/date-fns/locale/_lib/buildLocalizeFn.js
   function buildLocalizeFn(args) {
     return (value, options) => {
       const context = options?.context ? String(options.context) : "standalone";
@@ -391,8 +334,6 @@
       return valuesArray[index];
     };
   }
-
-  // ../../../Library/Caches/deno/deno_esbuild/registry.npmjs.org/date-fns@4.1.0/node_modules/date-fns/locale/en-US/_lib/localize.js
   var eraValues = {
     narrow: ["B", "A"],
     abbreviated: ["BC", "AD"],
@@ -553,8 +494,6 @@
       defaultFormattingWidth: "wide"
     })
   };
-
-  // ../../../Library/Caches/deno/deno_esbuild/registry.npmjs.org/date-fns@4.1.0/node_modules/date-fns/locale/_lib/buildMatchFn.js
   function buildMatchFn(args) {
     return (string, options = {}) => {
       const width = options.width;
@@ -566,13 +505,11 @@
       const matchedString = matchResult[0];
       const parsePatterns = width && args.parsePatterns[width] || args.parsePatterns[args.defaultParseWidth];
       const key = Array.isArray(parsePatterns) ? findIndex(parsePatterns, (pattern) => pattern.test(matchedString)) : (
-        // [TODO] -- I challenge you to fix the type
         findKey(parsePatterns, (pattern) => pattern.test(matchedString))
       );
       let value;
       value = args.valueCallback ? args.valueCallback(key) : key;
       value = options.valueCallback ? (
-        // [TODO] -- I challenge you to fix the type
         options.valueCallback(value)
       ) : value;
       const rest = string.slice(matchedString.length);
@@ -595,8 +532,6 @@
     }
     return void 0;
   }
-
-  // ../../../Library/Caches/deno/deno_esbuild/registry.npmjs.org/date-fns@4.1.0/node_modules/date-fns/locale/_lib/buildMatchPatternFn.js
   function buildMatchPatternFn(args) {
     return (string, options = {}) => {
       const matchResult = string.match(args.matchPattern);
@@ -610,8 +545,6 @@
       return { value, rest };
     };
   }
-
-  // ../../../Library/Caches/deno/deno_esbuild/registry.npmjs.org/date-fns@4.1.0/node_modules/date-fns/locale/en-US/_lib/match.js
   var matchOrdinalNumberPattern = /^(\d+)(th|st|nd|rd)?/i;
   var parseOrdinalNumberPattern = /\d+/i;
   var matchEraPatterns = {
@@ -729,8 +662,6 @@
       defaultParseWidth: "any"
     })
   };
-
-  // ../../../Library/Caches/deno/deno_esbuild/registry.npmjs.org/date-fns@4.1.0/node_modules/date-fns/locale/en-US.js
   var enUS = {
     code: "en-US",
     formatDistance,
@@ -743,23 +674,17 @@
       firstWeekContainsDate: 1
     }
   };
-
-  // ../../../Library/Caches/deno/deno_esbuild/registry.npmjs.org/date-fns@4.1.0/node_modules/date-fns/getDayOfYear.js
   function getDayOfYear(date, options) {
     const _date = toDate(date, options?.in);
     const diff = differenceInCalendarDays(_date, startOfYear(_date));
     const dayOfYear = diff + 1;
     return dayOfYear;
   }
-
-  // ../../../Library/Caches/deno/deno_esbuild/registry.npmjs.org/date-fns@4.1.0/node_modules/date-fns/getISOWeek.js
   function getISOWeek(date, options) {
     const _date = toDate(date, options?.in);
     const diff = +startOfISOWeek(_date) - +startOfISOWeekYear(_date);
     return Math.round(diff / millisecondsInWeek) + 1;
   }
-
-  // ../../../Library/Caches/deno/deno_esbuild/registry.npmjs.org/date-fns@4.1.0/node_modules/date-fns/getWeekYear.js
   function getWeekYear(date, options) {
     const _date = toDate(date, options?.in);
     const year = _date.getFullYear();
@@ -781,8 +706,6 @@
       return year - 1;
     }
   }
-
-  // ../../../Library/Caches/deno/deno_esbuild/registry.npmjs.org/date-fns@4.1.0/node_modules/date-fns/startOfWeekYear.js
   function startOfWeekYear(date, options) {
     const defaultOptions2 = getDefaultOptions();
     const firstWeekContainsDate = options?.firstWeekContainsDate ?? options?.locale?.options?.firstWeekContainsDate ?? defaultOptions2.firstWeekContainsDate ?? defaultOptions2.locale?.options?.firstWeekContainsDate ?? 1;
@@ -793,39 +716,29 @@
     const _date = startOfWeek(firstWeek, options);
     return _date;
   }
-
-  // ../../../Library/Caches/deno/deno_esbuild/registry.npmjs.org/date-fns@4.1.0/node_modules/date-fns/getWeek.js
   function getWeek(date, options) {
     const _date = toDate(date, options?.in);
     const diff = +startOfWeek(_date, options) - +startOfWeekYear(_date, options);
     return Math.round(diff / millisecondsInWeek) + 1;
   }
-
-  // ../../../Library/Caches/deno/deno_esbuild/registry.npmjs.org/date-fns@4.1.0/node_modules/date-fns/_lib/addLeadingZeros.js
   function addLeadingZeros(number, targetLength) {
     const sign = number < 0 ? "-" : "";
     const output = Math.abs(number).toString().padStart(targetLength, "0");
     return sign + output;
   }
-
-  // ../../../Library/Caches/deno/deno_esbuild/registry.npmjs.org/date-fns@4.1.0/node_modules/date-fns/_lib/format/lightFormatters.js
   var lightFormatters = {
-    // Year
     y(date, token) {
       const signedYear = date.getFullYear();
       const year = signedYear > 0 ? signedYear : 1 - signedYear;
       return addLeadingZeros(token === "yy" ? year % 100 : year, token.length);
     },
-    // Month
     M(date, token) {
       const month = date.getMonth();
       return token === "M" ? String(month + 1) : addLeadingZeros(month + 1, 2);
     },
-    // Day of the month
     d(date, token) {
       return addLeadingZeros(date.getDate(), token.length);
     },
-    // AM or PM
     a(date, token) {
       const dayPeriodEnumValue = date.getHours() / 12 >= 1 ? "pm" : "am";
       switch (token) {
@@ -841,23 +754,18 @@
           return dayPeriodEnumValue === "am" ? "a.m." : "p.m.";
       }
     },
-    // Hour [1-12]
     h(date, token) {
       return addLeadingZeros(date.getHours() % 12 || 12, token.length);
     },
-    // Hour [0-23]
     H(date, token) {
       return addLeadingZeros(date.getHours(), token.length);
     },
-    // Minute
     m(date, token) {
       return addLeadingZeros(date.getMinutes(), token.length);
     },
-    // Second
     s(date, token) {
       return addLeadingZeros(date.getSeconds(), token.length);
     },
-    // Fraction of second
     S(date, token) {
       const numberOfDigits = token.length;
       const milliseconds = date.getMilliseconds();
@@ -867,8 +775,6 @@
       return addLeadingZeros(fractionalSeconds, token.length);
     }
   };
-
-  // ../../../Library/Caches/deno/deno_esbuild/registry.npmjs.org/date-fns@4.1.0/node_modules/date-fns/_lib/format/formatters.js
   var dayPeriodEnum = {
     am: "am",
     pm: "pm",
@@ -880,25 +786,20 @@
     night: "night"
   };
   var formatters = {
-    // Era
     G: function(date, token, localize3) {
       const era = date.getFullYear() > 0 ? 1 : 0;
       switch (token) {
-        // AD, BC
         case "G":
         case "GG":
         case "GGG":
           return localize3.era(era, { width: "abbreviated" });
-        // A, B
         case "GGGGG":
           return localize3.era(era, { width: "narrow" });
-        // Anno Domini, Before Christ
         case "GGGG":
         default:
           return localize3.era(era, { width: "wide" });
       }
     },
-    // Year
     y: function(date, token, localize3) {
       if (token === "yo") {
         const signedYear = date.getFullYear();
@@ -907,7 +808,6 @@
       }
       return lightFormatters.y(date, token);
     },
-    // Local week-numbering year
     Y: function(date, token, localize3, options) {
       const signedWeekYear = getWeekYear(date, options);
       const weekYear = signedWeekYear > 0 ? signedWeekYear : 1 - signedWeekYear;
@@ -920,50 +820,33 @@
       }
       return addLeadingZeros(weekYear, token.length);
     },
-    // ISO week-numbering year
     R: function(date, token) {
       const isoWeekYear = getISOWeekYear(date);
       return addLeadingZeros(isoWeekYear, token.length);
     },
-    // Extended year. This is a single number designating the year of this calendar system.
-    // The main difference between `y` and `u` localizers are B.C. years:
-    // | Year | `y` | `u` |
-    // |------|-----|-----|
-    // | AC 1 |   1 |   1 |
-    // | BC 1 |   1 |   0 |
-    // | BC 2 |   2 |  -1 |
-    // Also `yy` always returns the last two digits of a year,
-    // while `uu` pads single digit years to 2 characters and returns other years unchanged.
     u: function(date, token) {
       const year = date.getFullYear();
       return addLeadingZeros(year, token.length);
     },
-    // Quarter
     Q: function(date, token, localize3) {
       const quarter = Math.ceil((date.getMonth() + 1) / 3);
       switch (token) {
-        // 1, 2, 3, 4
         case "Q":
           return String(quarter);
-        // 01, 02, 03, 04
         case "QQ":
           return addLeadingZeros(quarter, 2);
-        // 1st, 2nd, 3rd, 4th
         case "Qo":
           return localize3.ordinalNumber(quarter, { unit: "quarter" });
-        // Q1, Q2, Q3, Q4
         case "QQQ":
           return localize3.quarter(quarter, {
             width: "abbreviated",
             context: "formatting"
           });
-        // 1, 2, 3, 4 (narrow quarter; could be not numerical)
         case "QQQQQ":
           return localize3.quarter(quarter, {
             width: "narrow",
             context: "formatting"
           });
-        // 1st quarter, 2nd quarter, ...
         case "QQQQ":
         default:
           return localize3.quarter(quarter, {
@@ -972,32 +855,25 @@
           });
       }
     },
-    // Stand-alone quarter
     q: function(date, token, localize3) {
       const quarter = Math.ceil((date.getMonth() + 1) / 3);
       switch (token) {
-        // 1, 2, 3, 4
         case "q":
           return String(quarter);
-        // 01, 02, 03, 04
         case "qq":
           return addLeadingZeros(quarter, 2);
-        // 1st, 2nd, 3rd, 4th
         case "qo":
           return localize3.ordinalNumber(quarter, { unit: "quarter" });
-        // Q1, Q2, Q3, Q4
         case "qqq":
           return localize3.quarter(quarter, {
             width: "abbreviated",
             context: "standalone"
           });
-        // 1, 2, 3, 4 (narrow quarter; could be not numerical)
         case "qqqqq":
           return localize3.quarter(quarter, {
             width: "narrow",
             context: "standalone"
           });
-        // 1st quarter, 2nd quarter, ...
         case "qqqq":
         default:
           return localize3.quarter(quarter, {
@@ -1006,66 +882,53 @@
           });
       }
     },
-    // Month
     M: function(date, token, localize3) {
       const month = date.getMonth();
       switch (token) {
         case "M":
         case "MM":
           return lightFormatters.M(date, token);
-        // 1st, 2nd, ..., 12th
         case "Mo":
           return localize3.ordinalNumber(month + 1, { unit: "month" });
-        // Jan, Feb, ..., Dec
         case "MMM":
           return localize3.month(month, {
             width: "abbreviated",
             context: "formatting"
           });
-        // J, F, ..., D
         case "MMMMM":
           return localize3.month(month, {
             width: "narrow",
             context: "formatting"
           });
-        // January, February, ..., December
         case "MMMM":
         default:
           return localize3.month(month, { width: "wide", context: "formatting" });
       }
     },
-    // Stand-alone month
     L: function(date, token, localize3) {
       const month = date.getMonth();
       switch (token) {
-        // 1, 2, ..., 12
         case "L":
           return String(month + 1);
-        // 01, 02, ..., 12
         case "LL":
           return addLeadingZeros(month + 1, 2);
-        // 1st, 2nd, ..., 12th
         case "Lo":
           return localize3.ordinalNumber(month + 1, { unit: "month" });
-        // Jan, Feb, ..., Dec
         case "LLL":
           return localize3.month(month, {
             width: "abbreviated",
             context: "standalone"
           });
-        // J, F, ..., D
         case "LLLLL":
           return localize3.month(month, {
             width: "narrow",
             context: "standalone"
           });
-        // January, February, ..., December
         case "LLLL":
         default:
           return localize3.month(month, { width: "wide", context: "standalone" });
       }
     },
-    // Local week of year
     w: function(date, token, localize3, options) {
       const week = getWeek(date, options);
       if (token === "wo") {
@@ -1073,7 +936,6 @@
       }
       return addLeadingZeros(week, token.length);
     },
-    // ISO week of year
     I: function(date, token, localize3) {
       const isoWeek = getISOWeek(date);
       if (token === "Io") {
@@ -1081,14 +943,12 @@
       }
       return addLeadingZeros(isoWeek, token.length);
     },
-    // Day of the month
     d: function(date, token, localize3) {
       if (token === "do") {
         return localize3.ordinalNumber(date.getDate(), { unit: "date" });
       }
       return lightFormatters.d(date, token);
     },
-    // Day of year
     D: function(date, token, localize3) {
       const dayOfYear = getDayOfYear(date);
       if (token === "Do") {
@@ -1096,11 +956,9 @@
       }
       return addLeadingZeros(dayOfYear, token.length);
     },
-    // Day of week
     E: function(date, token, localize3) {
       const dayOfWeek = date.getDay();
       switch (token) {
-        // Tue
         case "E":
         case "EE":
         case "EEE":
@@ -1108,19 +966,16 @@
             width: "abbreviated",
             context: "formatting"
           });
-        // T
         case "EEEEE":
           return localize3.day(dayOfWeek, {
             width: "narrow",
             context: "formatting"
           });
-        // Tu
         case "EEEEEE":
           return localize3.day(dayOfWeek, {
             width: "short",
             context: "formatting"
           });
-        // Tuesday
         case "EEEE":
         default:
           return localize3.day(dayOfWeek, {
@@ -1129,18 +984,14 @@
           });
       }
     },
-    // Local day of week
     e: function(date, token, localize3, options) {
       const dayOfWeek = date.getDay();
       const localDayOfWeek = (dayOfWeek - options.weekStartsOn + 8) % 7 || 7;
       switch (token) {
-        // Numerical value (Nth day of week with current locale or weekStartsOn)
         case "e":
           return String(localDayOfWeek);
-        // Padded numerical value
         case "ee":
           return addLeadingZeros(localDayOfWeek, 2);
-        // 1st, 2nd, ..., 7th
         case "eo":
           return localize3.ordinalNumber(localDayOfWeek, { unit: "day" });
         case "eee":
@@ -1148,19 +999,16 @@
             width: "abbreviated",
             context: "formatting"
           });
-        // T
         case "eeeee":
           return localize3.day(dayOfWeek, {
             width: "narrow",
             context: "formatting"
           });
-        // Tu
         case "eeeeee":
           return localize3.day(dayOfWeek, {
             width: "short",
             context: "formatting"
           });
-        // Tuesday
         case "eeee":
         default:
           return localize3.day(dayOfWeek, {
@@ -1169,18 +1017,14 @@
           });
       }
     },
-    // Stand-alone local day of week
     c: function(date, token, localize3, options) {
       const dayOfWeek = date.getDay();
       const localDayOfWeek = (dayOfWeek - options.weekStartsOn + 8) % 7 || 7;
       switch (token) {
-        // Numerical value (same as in `e`)
         case "c":
           return String(localDayOfWeek);
-        // Padded numerical value
         case "cc":
           return addLeadingZeros(localDayOfWeek, token.length);
-        // 1st, 2nd, ..., 7th
         case "co":
           return localize3.ordinalNumber(localDayOfWeek, { unit: "day" });
         case "ccc":
@@ -1188,19 +1032,16 @@
             width: "abbreviated",
             context: "standalone"
           });
-        // T
         case "ccccc":
           return localize3.day(dayOfWeek, {
             width: "narrow",
             context: "standalone"
           });
-        // Tu
         case "cccccc":
           return localize3.day(dayOfWeek, {
             width: "short",
             context: "standalone"
           });
-        // Tuesday
         case "cccc":
         default:
           return localize3.day(dayOfWeek, {
@@ -1209,39 +1050,31 @@
           });
       }
     },
-    // ISO day of week
     i: function(date, token, localize3) {
       const dayOfWeek = date.getDay();
       const isoDayOfWeek = dayOfWeek === 0 ? 7 : dayOfWeek;
       switch (token) {
-        // 2
         case "i":
           return String(isoDayOfWeek);
-        // 02
         case "ii":
           return addLeadingZeros(isoDayOfWeek, token.length);
-        // 2nd
         case "io":
           return localize3.ordinalNumber(isoDayOfWeek, { unit: "day" });
-        // Tue
         case "iii":
           return localize3.day(dayOfWeek, {
             width: "abbreviated",
             context: "formatting"
           });
-        // T
         case "iiiii":
           return localize3.day(dayOfWeek, {
             width: "narrow",
             context: "formatting"
           });
-        // Tu
         case "iiiiii":
           return localize3.day(dayOfWeek, {
             width: "short",
             context: "formatting"
           });
-        // Tuesday
         case "iiii":
         default:
           return localize3.day(dayOfWeek, {
@@ -1250,7 +1083,6 @@
           });
       }
     },
-    // AM or PM
     a: function(date, token, localize3) {
       const hours = date.getHours();
       const dayPeriodEnumValue = hours / 12 >= 1 ? "pm" : "am";
@@ -1279,7 +1111,6 @@
           });
       }
     },
-    // AM, PM, midnight, noon
     b: function(date, token, localize3) {
       const hours = date.getHours();
       let dayPeriodEnumValue;
@@ -1315,7 +1146,6 @@
           });
       }
     },
-    // in the morning, in the afternoon, in the evening, at night
     B: function(date, token, localize3) {
       const hours = date.getHours();
       let dayPeriodEnumValue;
@@ -1349,7 +1179,6 @@
           });
       }
     },
-    // Hour [1-12]
     h: function(date, token, localize3) {
       if (token === "ho") {
         let hours = date.getHours() % 12;
@@ -1358,14 +1187,12 @@
       }
       return lightFormatters.h(date, token);
     },
-    // Hour [0-23]
     H: function(date, token, localize3) {
       if (token === "Ho") {
         return localize3.ordinalNumber(date.getHours(), { unit: "hour" });
       }
       return lightFormatters.H(date, token);
     },
-    // Hour [0-11]
     K: function(date, token, localize3) {
       const hours = date.getHours() % 12;
       if (token === "Ko") {
@@ -1373,7 +1200,6 @@
       }
       return addLeadingZeros(hours, token.length);
     },
-    // Hour [1-24]
     k: function(date, token, localize3) {
       let hours = date.getHours();
       if (hours === 0) hours = 24;
@@ -1382,109 +1208,80 @@
       }
       return addLeadingZeros(hours, token.length);
     },
-    // Minute
     m: function(date, token, localize3) {
       if (token === "mo") {
         return localize3.ordinalNumber(date.getMinutes(), { unit: "minute" });
       }
       return lightFormatters.m(date, token);
     },
-    // Second
     s: function(date, token, localize3) {
       if (token === "so") {
         return localize3.ordinalNumber(date.getSeconds(), { unit: "second" });
       }
       return lightFormatters.s(date, token);
     },
-    // Fraction of second
     S: function(date, token) {
       return lightFormatters.S(date, token);
     },
-    // Timezone (ISO-8601. If offset is 0, output is always `'Z'`)
     X: function(date, token, _localize) {
       const timezoneOffset = date.getTimezoneOffset();
       if (timezoneOffset === 0) {
         return "Z";
       }
       switch (token) {
-        // Hours and optional minutes
         case "X":
           return formatTimezoneWithOptionalMinutes(timezoneOffset);
-        // Hours, minutes and optional seconds without `:` delimiter
-        // Note: neither ISO-8601 nor JavaScript supports seconds in timezone offsets
-        // so this token always has the same output as `XX`
         case "XXXX":
         case "XX":
           return formatTimezone(timezoneOffset);
-        // Hours, minutes and optional seconds with `:` delimiter
-        // Note: neither ISO-8601 nor JavaScript supports seconds in timezone offsets
-        // so this token always has the same output as `XXX`
         case "XXXXX":
         case "XXX":
-        // Hours and minutes with `:` delimiter
         default:
           return formatTimezone(timezoneOffset, ":");
       }
     },
-    // Timezone (ISO-8601. If offset is 0, output is `'+00:00'` or equivalent)
     x: function(date, token, _localize) {
       const timezoneOffset = date.getTimezoneOffset();
       switch (token) {
-        // Hours and optional minutes
         case "x":
           return formatTimezoneWithOptionalMinutes(timezoneOffset);
-        // Hours, minutes and optional seconds without `:` delimiter
-        // Note: neither ISO-8601 nor JavaScript supports seconds in timezone offsets
-        // so this token always has the same output as `xx`
         case "xxxx":
         case "xx":
           return formatTimezone(timezoneOffset);
-        // Hours, minutes and optional seconds with `:` delimiter
-        // Note: neither ISO-8601 nor JavaScript supports seconds in timezone offsets
-        // so this token always has the same output as `xxx`
         case "xxxxx":
         case "xxx":
-        // Hours and minutes with `:` delimiter
         default:
           return formatTimezone(timezoneOffset, ":");
       }
     },
-    // Timezone (GMT)
     O: function(date, token, _localize) {
       const timezoneOffset = date.getTimezoneOffset();
       switch (token) {
-        // Short
         case "O":
         case "OO":
         case "OOO":
           return "GMT" + formatTimezoneShort(timezoneOffset, ":");
-        // Long
         case "OOOO":
         default:
           return "GMT" + formatTimezone(timezoneOffset, ":");
       }
     },
-    // Timezone (specific non-location)
     z: function(date, token, _localize) {
       const timezoneOffset = date.getTimezoneOffset();
       switch (token) {
-        // Short
         case "z":
         case "zz":
         case "zzz":
           return "GMT" + formatTimezoneShort(timezoneOffset, ":");
-        // Long
         case "zzzz":
         default:
           return "GMT" + formatTimezone(timezoneOffset, ":");
       }
     },
-    // Seconds timestamp
     t: function(date, token, _localize) {
       const timestamp = Math.trunc(+date / 1e3);
       return addLeadingZeros(timestamp, token.length);
     },
-    // Milliseconds timestamp
     T: function(date, token, _localize) {
       return addLeadingZeros(+date, token.length);
     }
@@ -1513,8 +1310,6 @@
     const minutes = addLeadingZeros(absOffset % 60, 2);
     return sign + hours + delimiter + minutes;
   }
-
-  // ../../../Library/Caches/deno/deno_esbuild/registry.npmjs.org/date-fns@4.1.0/node_modules/date-fns/_lib/format/longFormatters.js
   var dateLongFormatter = (pattern, formatLong3) => {
     switch (pattern) {
       case "P":
@@ -1570,8 +1365,6 @@
     p: timeLongFormatter,
     P: dateTimeLongFormatter
   };
-
-  // ../../../Library/Caches/deno/deno_esbuild/registry.npmjs.org/date-fns@4.1.0/node_modules/date-fns/_lib/protectedTokens.js
   var dayOfYearTokenRE = /^D+$/;
   var weekYearTokenRE = /^Y+$/;
   var throwTokens = ["D", "DD", "YY", "YYYY"];
@@ -1590,8 +1383,6 @@
     const subject = token[0] === "Y" ? "years" : "days of the month";
     return `Use \`${token.toLowerCase()}\` instead of \`${token}\` (in \`${format2}\`) for formatting ${subject} to the input \`${input}\`; see: https://github.com/date-fns/date-fns/blob/master/docs/unicodeTokens.md`;
   }
-
-  // ../../../Library/Caches/deno/deno_esbuild/registry.npmjs.org/date-fns@4.1.0/node_modules/date-fns/format.js
   var formattingTokensRegExp = /[yYQqMLwIdDecihHKkms]o|(\w)\1*|''|'(''|[^'])+('|$)|./g;
   var longFormattingTokensRegExp = /P+p+|P+|p+|''|'(''|[^'])+('|$)|./g;
   var escapedStringRegExp = /^'([^]*?)'?$/;
@@ -1656,8 +1447,6 @@
     }
     return matched[1].replace(doubleQuoteRegExp, "'");
   }
-
-  // ../../../Library/Caches/deno/deno_esbuild/registry.npmjs.org/date-fns@4.1.0/node_modules/date-fns/formatDistance.js
   function formatDistance2(laterDate, earlierDate, options) {
     const defaultOptions2 = getDefaultOptions();
     const locale = options?.locale ?? defaultOptions2.locale ?? enUS;
@@ -1730,8 +1519,6 @@
       }
     }
   }
-
-  // ../../../Library/Caches/deno/deno_esbuild/registry.npmjs.org/date-fns@4.1.0/node_modules/date-fns/parseISO.js
   function parseISO(argument, options) {
     const invalidDate = () => constructFrom(options?.in, NaN);
     const additionalDigits = options?.additionalDigits ?? 2;
@@ -1905,8 +1692,6 @@
   function validateTimezone(_hours, minutes) {
     return minutes >= 0 && minutes <= 59;
   }
-
-  // ../../../Library/Caches/deno/deno_esbuild/registry.npmjs.org/date-fns@4.1.0/node_modules/date-fns/locale/ja/_lib/formatDistance.js
   var formatDistanceLocale2 = {
     lessThanXSeconds: {
       one: "1秒未満",
@@ -2002,8 +1787,6 @@
     }
     return result;
   };
-
-  // ../../../Library/Caches/deno/deno_esbuild/registry.npmjs.org/date-fns@4.1.0/node_modules/date-fns/locale/ja/_lib/formatLong.js
   var dateFormats2 = {
     full: "y年M月d日EEEE",
     long: "y年M月d日",
@@ -2036,8 +1819,6 @@
       defaultWidth: "full"
     })
   };
-
-  // ../../../Library/Caches/deno/deno_esbuild/registry.npmjs.org/date-fns@4.1.0/node_modules/date-fns/locale/ja/_lib/formatRelative.js
   var formatRelativeLocale2 = {
     lastWeek: "先週のeeeeのp",
     yesterday: "昨日のp",
@@ -2049,8 +1830,6 @@
   var formatRelative2 = (token, _date, _baseDate, _options) => {
     return formatRelativeLocale2[token];
   };
-
-  // ../../../Library/Caches/deno/deno_esbuild/registry.npmjs.org/date-fns@4.1.0/node_modules/date-fns/locale/ja/_lib/localize.js
   var eraValues2 = {
     narrow: ["BC", "AC"],
     abbreviated: ["紀元前", "西暦"],
@@ -2212,8 +1991,6 @@
       defaultFormattingWidth: "wide"
     })
   };
-
-  // ../../../Library/Caches/deno/deno_esbuild/registry.npmjs.org/date-fns@4.1.0/node_modules/date-fns/locale/ja/_lib/match.js
   var matchOrdinalNumberPattern2 = /^第?\d+(年|四半期|月|週|日|時|分|秒)?/i;
   var parseOrdinalNumberPattern2 = /\d+/i;
   var matchEraPatterns2 = {
@@ -2318,8 +2095,6 @@
       defaultParseWidth: "any"
     })
   };
-
-  // ../../../Library/Caches/deno/deno_esbuild/registry.npmjs.org/date-fns@4.1.0/node_modules/date-fns/locale/ja.js
   var ja = {
     code: "ja",
     formatDistance: formatDistance3,
@@ -2332,8 +2107,6 @@
       firstWeekContainsDate: 1
     }
   };
-
-  // examples/date-formatter-plugin/src/index.ts
   function formatDate(dateString, formatPattern) {
     const date = parseISO(dateString);
     return format(date, formatPattern, { locale: ja });
