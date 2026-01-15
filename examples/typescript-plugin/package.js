@@ -20,7 +20,7 @@ Sapphillon.Package = {
   functions: {
     add: {
       handler: add,
-      permissions: [{ type: "FileSystemRead", resource: "/etc" }, { type: "FileSystemWrite", resource: "/etc" }],
+      permissions: [{type: "FileSystemRead", resource: "/etc"}, {type: "FileSystemWrite", resource: "/etc"}],
       description: "2つの数値を加算します。",
       parameters: [
         { name: "a", idx: 0, type: "number", description: "足される数" },

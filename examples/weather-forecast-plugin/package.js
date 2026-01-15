@@ -13,16 +13,17 @@
  * @returns {Promise<WeatherInfo>}
  */
 async function fetchWeather(cityId) {
-  const url = `https://weather.tsukumijima.net/api/forecast?city=${cityId}`;
+  const url = `https://weather.tsukumijima.net/api/forecast?city=${encodeURIComponent(cityId)}`;
   const response = await fetch(url);
   if (!response.ok) {
-    throw new Error("Failed to fetch weather data.");
+    throw new Error(`Failed to fetch weather data: ${response.status} ${response.statusText}`);
   }
   return response.json();
 }
 
-
 // examples/weather-forecast-plugin/src/formatter.ts
+
+import type { WeatherInfo } from "./api.ts";
 
 /**
  * WeatherInfoオブジェクトを整形された文字列に変換します。
@@ -70,7 +71,7 @@ Sapphillon.Package = {
   functions: {
     getWeatherForecast: {
       handler: getWeatherForecast,
-      permissions: [{ type: "Net", resource: "weather.tsukumijima.net" }],
+      permissions: [{type: "Net", resource: "weather.tsukumijima.net"}],
       description: "指定された都市の天気予報を取得します。",
       parameters: [
         { name: "cityId", idx: 0, type: "string", description: "天気予報を取得する都市のID" }
