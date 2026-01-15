@@ -37,9 +37,20 @@ export function parseJavaScript(content: string): FunctionInfo[] {
 
   // Match JSDoc comment followed by export function
   // Handles both JavaScript and TypeScript syntax (with optional type annotations)
-  // The \s* after */ allows for optional whitespace including newlines
+  // Regex breakdown:
+  //   \/\*\*                          - Match JSDoc start /**
+  //   ((?:(?!\*\/)[\s\S])*?)          - Capture group 1: Match any character until */
+  //                                     Uses non-capturing group (?:...) with negative lookahead
+  //                                     (?!\*\/) to ensure we stop before the closing */
+  //   \*\/                            - Match JSDoc end */
+  //   \s*export\s+                    - Match 'export' keyword with optional whitespace
+  //   (async\s+)?                     - Capture group 2: optional 'async' keyword
+  //   function\s+(\w+)                - Capture group 3: function name
+  //   \(([^)]*)\)                     - Capture group 4: parameters
+  //   (?:\s*:\s*[^{]+)?               - Non-capturing: optional TypeScript return type
+  //   \s*\{([\s\S]*?)\n\}             - Capture group 5: function body
   const jsdocFunctionRegex =
-    /\/\*\*\s*([\s\S]*?)\s*\*\/\s*export\s+(async\s+)?function\s+(\w+)\s*\(([^)]*)\)(?:\s*:\s*[^{]+)?\s*\{([\s\S]*?)\n\}/g;
+    /\/\*\*((?:(?!\*\/)[\s\S])*?)\*\/\s*export\s+(async\s+)?function\s+(\w+)\s*\(([^)]*)\)(?:\s*:\s*[^{]+)?\s*\{([\s\S]*?)\n\}/g;
 
   let match;
   while ((match = jsdocFunctionRegex.exec(content)) !== null) {

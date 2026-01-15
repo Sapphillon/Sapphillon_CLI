@@ -164,6 +164,7 @@ Sapphillon.Package = {
     name: "${escapeJsString(packageToml.package.name)}",
     version: "${escapeJsString(packageToml.package.version)}",
     description: "${escapeJsString(packageToml.package.description)}",
+    author_id: "${escapeJsString(packageToml.package.author_id)}",
     package_id: "${escapeJsString(packageToml.package.package_id)}"
   },
   functions: {

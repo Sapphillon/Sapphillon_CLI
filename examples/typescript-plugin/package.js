@@ -1,20 +1,15 @@
-/**
- * 2つの数値を加算します。
- * @param {number} a - 足される数
- * @param {number} b - 足す数
- * @returns {number} 合計
- * @permission ["FileSystemRead:/etc", "FileSystemWrite:/etc"]
- */
-function add(a, b) {
-  return a + b;
-}
+// examples/typescript-plugin/src/index.ts
+  function add(a, b) {
+    return a + b;
+  }
 
 Sapphillon.Package = {
   meta: {
     name: "TypeScript Example",
     version: "1.0.0",
     description: "A simple TypeScript-based plugin example.",
-    package_id: "com.example.typescript"
+    author_id: "app.sapphillon",
+    package_id: "app.sapphillon.typescript-example"
   },
   functions: {
     add: {

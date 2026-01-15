@@ -55,14 +55,14 @@ version = "1.0.0"
   }
 });
 
-Deno.test("parsePackageToml - parses full package.toml", () => {
+Deno.test("parsePackageToml - parses full package.toml with author_id", () => {
   const content = `
 [package]
 name = "my-awesome-plugin"
 version = "1.0.0"
 description = "A test plugin"
 entry = "src/index.js"
-package_id = "com.example"
+author_id = "app.sapphillon"
 `;
   const result = parsePackageToml(content);
   if (result.package.name !== "my-awesome-plugin") {
@@ -77,8 +77,14 @@ package_id = "com.example"
   if (result.package.entry !== "src/index.js") {
     throw new Error(`Expected entry to be 'src/index.js'`);
   }
-  if (result.package.package_id !== "com.example") {
-    throw new Error(`Expected package_id to be 'com.example'`);
+  if (result.package.author_id !== "app.sapphillon") {
+    throw new Error(`Expected author_id to be 'app.sapphillon'`);
+  }
+  // package_id is auto-generated from author_id.name
+  if (result.package.package_id !== "app.sapphillon.my-awesome-plugin") {
+    throw new Error(
+      `Expected package_id to be 'app.sapphillon.my-awesome-plugin', got '${result.package.package_id}'`,
+    );
   }
 });
 

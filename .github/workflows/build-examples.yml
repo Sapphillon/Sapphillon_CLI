@@ -29,10 +29,10 @@ jobs:
           deno-version: v1.x
 
       - name: Build JavaScript example
-        run: deno run --allow-read --allow-write --allow-net main.ts build --project ./examples/javascript-plugin
+        run: deno run --allow-read --allow-write --allow-net --allow-env main.ts build --project ./examples/javascript-plugin
 
       - name: Build TypeScript example
-        run: deno run --allow-read --allow-write --allow-net main.ts build --project ./examples/typescript-plugin
+        run: deno run --allow-read --allow-write --allow-net --allow-env main.ts build --project ./examples/typescript-plugin
 
       - name: Commit and push changes
         uses: stefanzweifel/git-auto-commit-action@v5
