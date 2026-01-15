@@ -1,6 +1,6 @@
 {
   "name": "@sapphillon/cli",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "exports": "./main.ts",
   "imports": {
     "esbuild": "npm:esbuild@0.24.2",
