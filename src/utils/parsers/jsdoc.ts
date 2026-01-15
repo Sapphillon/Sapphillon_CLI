@@ -37,9 +37,9 @@ export function parseJavaScript(content: string): FunctionInfo[] {
 
   // Match JSDoc comment followed by export function
   // Handles both JavaScript and TypeScript syntax (with optional type annotations)
-  // The \s* after */ allows for optional whitespace including newlines
+  // Use negative lookahead to ensure we don't match content spanning multiple JSDoc blocks
   const jsdocFunctionRegex =
-    /\/\*\*\s*([\s\S]*?)\s*\*\/\s*export\s+(async\s+)?function\s+(\w+)\s*\(([^)]*)\)(?:\s*:\s*[^{]+)?\s*\{([\s\S]*?)\n\}/g;
+    /\/\*\*((?:(?!\*\/)[\s\S])*?)\*\/\s*export\s+(async\s+)?function\s+(\w+)\s*\(([^)]*)\)(?:\s*:\s*[^{]+)?\s*\{([\s\S]*?)\n\}/g;
 
   let match;
   while ((match = jsdocFunctionRegex.exec(content)) !== null) {

@@ -5560,7 +5560,7 @@ Sapphillon.Package = {
     toCamelCase: {
       handler: toCamelCase,
       permissions: [],
-      description: "Text Utils Plugin",
+      description: "テキストをキャメルケースに変換します。",
       parameters: [
         { name: "text", idx: 0, type: "string", description: "変換する文字列" }
       ],
