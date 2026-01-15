@@ -39,8 +39,9 @@ export function parseJavaScript(content: string): FunctionInfo[] {
   // Handles both JavaScript and TypeScript syntax (with optional type annotations)
   // Regex breakdown:
   //   \/\*\*                          - Match JSDoc start /**
-  //   ((?:(?!\*\/)[\s\S])*?)          - Capture group 1: uses inner non-capturing group with
-  //                                     negative lookahead to match any char not followed by */
+  //   ((?:(?!\*\/)[\s\S])*?)          - Capture group 1: Match any character except */
+  //                                     Uses non-capturing group (?:...) with negative lookahead
+  //                                     (?!\*\/) to ensure we stop before closing */
   //   \*\/                            - Match JSDoc end */
   //   \s*export\s+                    - Match 'export' keyword with optional whitespace
   //   (async\s+)?                     - Capture group 2: optional 'async' keyword
