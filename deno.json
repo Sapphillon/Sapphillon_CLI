@@ -2,6 +2,10 @@
   "name": "@sapphillon/cli",
   "version": "0.2.0",
   "exports": "./main.ts",
+  "imports": {
+    "esbuild": "npm:esbuild@0.24.2",
+    "@luca/esbuild-deno-loader": "jsr:@luca/esbuild-deno-loader@0.11.1"
+  },
   "tasks": {
     "dev": "deno run --watch --allow-read --allow-write --allow-net --allow-run --allow-env main.ts",
     "start": "deno run --allow-read --allow-write --allow-net --allow-run --allow-env main.ts",
