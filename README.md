@@ -37,7 +37,7 @@ You can install this CLI globally using Deno's install command:
 
 ```bash
 # Install from the repository
-deno install --global --config=https://raw.githubusercontent.com/Sapphillon/Sapphillon_CLI/main/deno.json --allow-read --allow-write --allow-net --allow-run --allow-env -n sapphillon https://raw.githubusercontent.com/Sapphillon/Sapphillon_CLI/main/main.ts
+deno install --global --allow-read --allow-write --allow-net --allow-run --allow-env -n sapphillon https://raw.githubusercontent.com/Sapphillon/Sapphillon_CLI/main/main.ts
 
 # Or if you've cloned the repository locally
 deno install --global --allow-read --allow-write --allow-net --allow-run --allow-env -n sapphillon main.ts
