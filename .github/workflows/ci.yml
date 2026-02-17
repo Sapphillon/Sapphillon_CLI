@@ -46,4 +46,4 @@ jobs:
           deno-version: v1.x
 
       - name: Verify CLI runs
-        run: deno run --allow-read --allow-write --allow-net --allow-env main.ts --version
+        run: deno run --allow-read --allow-write --allow-net --allow-run --allow-env main.ts --version

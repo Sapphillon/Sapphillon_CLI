@@ -149,13 +149,13 @@ jobs:
             Install the latest version using Deno:
             
             ```bash
-            deno install --allow-read --allow-write --allow-net --allow-run --allow-env -n sapphillon https://raw.githubusercontent.com/Sapphillon/Sapphillon_CLI/refs/tags/v${{ steps.calc_version.outputs.new_version }}/main.ts
+            deno install --global --config=https://raw.githubusercontent.com/Sapphillon/Sapphillon_CLI/refs/tags/v${{ steps.calc_version.outputs.new_version }}/deno.json --allow-read --allow-write --allow-net --allow-run --allow-env -n sapphillon https://raw.githubusercontent.com/Sapphillon/Sapphillon_CLI/refs/tags/v${{ steps.calc_version.outputs.new_version }}/main.ts
             ```
             
             Or install from the main branch (latest):
             
             ```bash
-            deno install --allow-read --allow-write --allow-net --allow-run --allow-env -n sapphillon https://raw.githubusercontent.com/Sapphillon/Sapphillon_CLI/main/main.ts
+            deno install --global --config=https://raw.githubusercontent.com/Sapphillon/Sapphillon_CLI/main/deno.json --allow-read --allow-write --allow-net --allow-run --allow-env -n sapphillon https://raw.githubusercontent.com/Sapphillon/Sapphillon_CLI/main/main.ts
             ```
           draft: false
           prerelease: ${{ github.event.inputs.prerelease }}
