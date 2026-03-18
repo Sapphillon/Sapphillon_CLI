@@ -46,7 +46,10 @@ pub fn parse_package_toml(content: &str) -> anyhow::Result<ResolvedPackageToml> 
         name,
         version: raw.package.version,
         description: raw.package.description,
-        entry: raw.package.entry.unwrap_or_else(|| "src/index.js".to_string()),
+        entry: raw
+            .package
+            .entry
+            .unwrap_or_else(|| "src/index.js".to_string()),
         author_id,
         package_id,
     })

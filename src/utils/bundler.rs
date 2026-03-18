@@ -1,11 +1,11 @@
-use std::path::Path;
-use anyhow::{anyhow, Context};
-use std::fs;
+use anyhow::Context;
 use regex::Regex;
+use std::fs;
+use std::path::Path;
 
 pub struct BundleOptions {
     pub entry_point: String,
-    pub project_dir: String,
+    pub _project_dir: String,
 }
 
 pub struct BundleResult {
@@ -19,12 +19,14 @@ pub struct BundleResult {
 /// or try to fix the SWC setup.
 pub async fn bundle(options: BundleOptions) -> anyhow::Result<BundleResult> {
     let entry_path = Path::new(&options.entry_point);
-    let is_typescript = entry_path.extension().map_or(false, |ext| ext == "ts" || ext == "tsx");
+    let is_typescript = entry_path
+        .extension()
+        .is_some_and(|ext| ext == "ts" || ext == "tsx");
 
     let content = fs::read_to_string(entry_path)
         .with_context(|| format!("Failed to read entry point: {}", options.entry_point))?;
 
-    let mut code = if is_typescript {
+    let code = if is_typescript {
         // Fallback to a simpler approach if SWC fails
         simple_transpile_ts(&content)
     } else {
@@ -32,7 +34,7 @@ pub async fn bundle(options: BundleOptions) -> anyhow::Result<BundleResult> {
     };
 
     // Simple export removal to match the original behavior
-    code = remove_exports(&code);
+    let code = remove_exports(&code);
 
     Ok(BundleResult {
         code: code.trim().to_string(),
@@ -46,7 +48,8 @@ fn simple_transpile_ts(content: &str) -> String {
     let mut code = content.to_string();
 
     // Remove ': number', ': string', ': boolean', ': void', etc.
-    let re_types = Regex::new(r":\s*(number|string|boolean|void|any|string\[\]|number\[\])").unwrap();
+    let re_types =
+        Regex::new(r":\s*(number|string|boolean|void|any|string\[\]|number\[\])").unwrap();
     code = re_types.replace_all(&code, "").to_string();
 
     // Remove 'as string', etc.

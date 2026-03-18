@@ -1,2 +1,2 @@
-pub mod parsers;
 pub mod bundler;
+pub mod parsers;

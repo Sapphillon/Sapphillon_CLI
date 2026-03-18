@@ -1,9 +1,9 @@
-use std::fs;
-use std::path::{Path, PathBuf};
-use anyhow::{anyhow, Context};
-use crate::utils::parsers::toml::parse_package_toml;
-use crate::utils::parsers::jsdoc::{parse_javascript, FunctionInfo};
 use crate::utils::bundler::{bundle, has_imports, BundleOptions};
+use crate::utils::parsers::jsdoc::{parse_javascript, FunctionInfo};
+use crate::utils::parsers::toml::parse_package_toml;
+use anyhow::Context;
+use std::fs;
+use std::path::Path;
 
 pub struct BuildOptions {
     pub project: Option<String>,
@@ -29,15 +29,18 @@ pub async fn exec(options: BuildOptions) -> anyhow::Result<()> {
         println!("Warning: No exported functions found in entry file");
     }
 
-    let is_ts = entry_path.extension().map_or(false, |ext| ext == "ts" || ext == "tsx");
+    let is_ts = entry_path
+        .extension()
+        .is_some_and(|ext| ext == "ts" || ext == "tsx");
     let needs_bundling = is_ts || has_imports(&entry_content);
 
-    let mut bundled_code = if needs_bundling {
+    let bundled_code = if needs_bundling {
         println!("📦 Bundling dependencies...");
         let result = bundle(BundleOptions {
             entry_point: entry_path.to_string_lossy().into_owned(),
-            project_dir: project_dir.to_string(),
-        }).await?;
+            _project_dir: project_dir.to_string(),
+        })
+        .await?;
 
         if result.is_typescript {
             println!("   - TypeScript transpiled");
@@ -50,7 +53,7 @@ pub async fn exec(options: BuildOptions) -> anyhow::Result<()> {
 
     // Generate package.js content
     let package_js_content = format!(
-r#"{bundled_code}
+        r#"{bundled_code}
 
 Sapphillon.Package = {{
   meta: {{
@@ -103,25 +106,58 @@ fn generate_functions_object(functions: &[FunctionInfo]) -> String {
     let mut entries = Vec::new();
 
     for fn_info in functions {
-        let permissions: Vec<String> = fn_info.permissions.iter()
-            .map(|p| format!(r#"{{type: "{}", resource: "{}"}}"#, escape_js_string(&p.r#type), escape_js_string(&p.resource)))
+        let permissions: Vec<String> = fn_info
+            .permissions
+            .iter()
+            .map(|p| {
+                format!(
+                    r#"{{type: "{}", resource: "{}"}}"#,
+                    escape_js_string(&p.r#type),
+                    escape_js_string(&p.resource)
+                )
+            })
             .collect();
 
-        let parameters: Vec<String> = fn_info.parameters.iter()
-            .map(|p| format!(r#"{{ name: "{}", idx: {}, type: "{}", description: "{}" }}"#,
-                escape_js_string(&p.name), p.idx, escape_js_string(&p.r#type), escape_js_string(&p.description)))
+        let parameters: Vec<String> = fn_info
+            .parameters
+            .iter()
+            .map(|p| {
+                format!(
+                    r#"{{ name: "{}", idx: {}, type: "{}", description: "{}" }}"#,
+                    escape_js_string(&p.name),
+                    p.idx,
+                    escape_js_string(&p.r#type),
+                    escape_js_string(&p.description)
+                )
+            })
             .collect();
 
-        let returns: Vec<String> = fn_info.returns.iter()
-            .map(|r| format!(r#"{{ type: "{}", idx: {}, description: "{}" }}"#,
-                escape_js_string(&r.r#type), r.idx, escape_js_string(&r.description)))
+        let returns: Vec<String> = fn_info
+            .returns
+            .iter()
+            .map(|r| {
+                format!(
+                    r#"{{ type: "{}", idx: {}, description: "{}" }}"#,
+                    escape_js_string(&r.r#type),
+                    r.idx,
+                    escape_js_string(&r.description)
+                )
+            })
             .collect();
 
-        let params_str = if parameters.is_empty() { "[]".to_string() } else { format!("[\n        {}\n      ]", parameters.join(",\n        ")) };
-        let returns_str = if returns.is_empty() { "[]".to_string() } else { format!("[\n        {}\n      ]", returns.join(",\n        ")) };
+        let params_str = if parameters.is_empty() {
+            "[]".to_string()
+        } else {
+            format!("[\n        {}\n      ]", parameters.join(",\n        "))
+        };
+        let returns_str = if returns.is_empty() {
+            "[]".to_string()
+        } else {
+            format!("[\n        {}\n      ]", returns.join(",\n        "))
+        };
 
         entries.push(format!(
-r#"    {name}: {{
+            r#"    {name}: {{
       handler: {name},
       permissions: [{permissions}],
       description: "{description}",

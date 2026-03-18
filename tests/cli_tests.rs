@@ -54,7 +54,8 @@ fn test_build_basic() -> anyhow::Result<()> {
 
     // First init
     let mut init_cmd = Command::cargo_bin("sapphillon")?;
-    init_cmd.current_dir(dir.path())
+    init_cmd
+        .current_dir(dir.path())
         .arg("init")
         .arg("my-plugin")
         .assert()
@@ -64,7 +65,8 @@ fn test_build_basic() -> anyhow::Result<()> {
 
     // Then build
     let mut build_cmd = Command::cargo_bin("sapphillon")?;
-    build_cmd.current_dir(&plugin_dir)
+    build_cmd
+        .current_dir(&plugin_dir)
         .arg("build")
         .assert()
         .success();
@@ -84,6 +86,8 @@ fn test_help() -> anyhow::Result<()> {
     cmd.arg("--help")
         .assert()
         .success()
-        .stdout(predicate::str::contains("A command-line tool for creating and building Sapphillon plugin packages"));
+        .stdout(predicate::str::contains(
+            "A command-line tool for creating and building Sapphillon plugin packages",
+        ));
     Ok(())
 }

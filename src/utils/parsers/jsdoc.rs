@@ -1,5 +1,5 @@
-use serde::{Deserialize, Serialize};
 use regex::Regex;
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ParameterInfo {
@@ -55,8 +55,9 @@ pub fn parse_javascript(content: &str) -> Vec<FunctionInfo> {
         function\s+(\w+)
         \s*\(([^)]*)\)
         (?:\s*:\s*[^{]+)?
-        \s*\{(?s:(.*?))\n\}"
-    ).unwrap();
+        \s*\{(?s:(.*?))\n\}",
+    )
+    .unwrap();
 
     for cap in jsdoc_function_regex.captures_iter(content) {
         let jsdoc_content = &cap[1];
