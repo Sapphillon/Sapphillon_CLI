@@ -18,19 +18,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Deno
-        uses: denoland/setup-deno@v1
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
         with:
-          deno-version: v1.x
+          components: clippy, rustfmt
 
       - name: Run tests
-        run: deno task test
+        run: cargo test
 
       - name: Check formatting
-        run: deno task fmt:check
+        run: cargo fmt -- --check
 
-      - name: Run linter
-        run: deno task lint
+      - name: Run clippy
+        run: cargo clippy -- -D warnings
 
   build:
     name: Build
@@ -40,10 +40,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Deno
-        uses: denoland/setup-deno@v1
-        with:
-          deno-version: v1.x
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Build
+        run: cargo build --release
 
       - name: Verify CLI runs
-        run: deno run --allow-read --allow-write --allow-net --allow-run --allow-env main.ts --version
+        run: ./target/release/sapphillon --version
